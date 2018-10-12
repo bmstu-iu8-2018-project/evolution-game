@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include </home/mariasolovyova/SFML-2.3.2/include/SFML/Graphics.hpp>
+#include <SFML/Graphics.hpp>
 
 class Map
 {
