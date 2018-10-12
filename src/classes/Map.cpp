@@ -1,6 +1,6 @@
 #include "Map.hpp"
 
-Map::Map(sf::RenderWindow *window)
+Map::Map(sf::RenderWindow& window)
 {
     Hexagon hex;
     hex.hexagon.setFillColor(sf::Color(66, 170, 255));

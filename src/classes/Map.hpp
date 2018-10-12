@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <SFML/Graphics.hpp>
+#include </home/mariasolovyova/SFML-2.3.2/include/SFML/Graphics.hpp>
 
 class Map
 {
@@ -15,7 +15,7 @@ class Map
 public:
     Map() = default;
     ~Map() = default;
-    Map(sf::RenderWindow *window);
+    Map(sf::RenderWindow& window);
     Hexagon& operator[](int index);
     const Hexagon& operator[](int index) const;
     size_t Size();
