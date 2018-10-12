@@ -2,12 +2,12 @@
 #include <string>
 #include <vector>
 #include <SFML/Graphics.hpp>
-#include "Map.hpp"
+#include "classes/Map.hpp"
 
 int main()
 {
     sf::RenderWindow window(sf::VideoMode(2000, 1000), "SFML works!");
-    Map map(&window);
+    Map map(window);
     while (window.isOpen())
     {
         sf::Event event;
