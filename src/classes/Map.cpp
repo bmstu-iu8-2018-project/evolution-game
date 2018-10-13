@@ -34,15 +34,24 @@ Map::Map(sf::RenderWindow& window)
         hex.Y += deltaY;
     }
 }
-Map::Hexagon& Map::operator[](int index)
+Map::Hexagon& Map::operator[](size_t index)
 {
     return vecHex[index];
 }
-const Map::Hexagon& Map::operator[](int index) const
+const Map::Hexagon& Map::operator[](size_t index) const
 {
     return vecHex[index];
 }
 size_t Map::Size()
 {
     return vecHex.size();
+}
+float Map::getPositionX(size_t index)
+{
+    return vecHex[index].X;
+}
+
+float Map::getPositionY(size_t index)
+{
+    return vecHex[index].Y;
 }
