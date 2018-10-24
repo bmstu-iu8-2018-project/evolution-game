@@ -1,27 +1,15 @@
 #include "Evolution.hpp"
-#include "StationaryObject.hpp"
 
 
 Evolution::Evolution()
 {
-    window.create(sf::VideoMode(width, height), "Evolution");
-    map = Map(window);
-}
-size_t Evolution::getWidth()
-{
-    return width;
-}
-
-size_t Evolution::getHeight()
-{
-    return height;
+    map = Map();
+    sunMap = SunMap();
+    window.create(sf::VideoMode(2000, 1000), "Evolution");
 }
 
 void Evolution::run()
 {
-    StationaryObject hexagonObj;
-    //  hexagonObj.setPosition(map);
-    std::vector<StationaryObject> vecObj;
     while (window.isOpen())
     {
         sf::Event event;
@@ -34,18 +22,24 @@ void Evolution::run()
             else if (event.type == sf::Event::KeyReleased)
                 keyboard.release(event.key.code);
             window.clear();
-            for (size_t i = 0; i < map.Size(); ++i)
-            {
-                map[i].hexagon.setPosition(map[i].X, map[i].Y);
-                window.draw(map[i].hexagon);
-            }
-            for (size_t i = 0; i < vecObj.size(); ++i) {
-                window.draw(vecObj[i].getObject());
-            }
-            //hexagonObj.getObject().setPosition(hexagonObj.getPosX(), hexagonObj.getPosY());
-            //hexagonObj.setPos(map);
-            window.draw(hexagonObj.getObject());
-            window.display();
         }
+
+        for (size_t i = 1; i < map.getHeightInCells(); ++i)
+        {
+            for (size_t j = 0; j < map.getWidthInCells(); ++j)
+            {
+                map[i][j].getHex().setPosition(map[i][j].getX(), map[i][j].getY());
+                window.draw(map[i][j].getHex());
+                map[i][j].Update(map, sunMap);
+            }
+        }
+        for (size_t j = 0; j < sunMap.getWidthInCells(); ++j)
+        {
+            sunMap.getGrafics()[j].hexagon.setPosition(sunMap.getGrafics()[j].X, sunMap.getGrafics()[j].Y);
+            window.draw(sunMap.getGrafics()[j].hexagon);
+        }
+        sunMap.Update(&window);
+        window.display();
+        //  std::this_thread::sleep_for(std::chrono::seconds(1));
     }
 }
