@@ -7,9 +7,6 @@
 #include <SFML/Graphics.hpp>
 #include "Hexagon.hpp"
 
-// нужно сделать обновление карты, замерять через какое время трава вырастает
-
-//class Hexagon;
 
 class Row
 {
@@ -29,14 +26,14 @@ public:
     {
         row.push_back(hex);
     }
-    float getPositionX(size_t index)
+    double getPositionX(size_t index)
     {
-        return row[index].getX();
+        return row[index].GetX();
     }
 
-    float getPositionY(size_t index)
+    double getPositionY(size_t index)
     {
-        return row[index].getY();
+        return row[index].GetY();
     }
 };
 
@@ -44,25 +41,27 @@ public:
 class Map
 {
 public:
-
     Map();
     ~Map() = default;
     Row& operator[](size_t indexX);
     const Row& operator[](size_t index) const;
 
-    unsigned int getWidth();
-    unsigned int getHeight();
+    void Update();
 
-    size_t getWidthInCells();
-    size_t getHeightInCells();
+    unsigned int GetWidth();
+    unsigned int GetHeight();
 
-    void setObject(Hexagon&);
+    size_t GetWidthInCells();
+    size_t GetHeightInCells();
+
+    void SetObject(const Hexagon&);
 private:
     static const unsigned int width = 2000;
     static const unsigned int height = 1000;
     static const size_t widthInCells = 94;
     static const size_t heightInCells = 60;
     std::vector<Row> map;
+    std::vector<Hexagon*> organisms;
 };
 
-#endif //EVOLUTION_MAP_H
+#endif

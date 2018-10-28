@@ -10,7 +10,6 @@
 class Evolution
 {
     Map map;
-    SunMap sunMap;
     sf::RenderWindow window;                   // std::shared_ptr<sf::RenderWindow> window; // может так?
     Keyboard keyboard;
 public:

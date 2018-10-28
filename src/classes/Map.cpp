@@ -1,17 +1,16 @@
 #include "Map.hpp"
-#include "Hexagon.hpp"
-
+#include "Food.hpp"
+#include "Pixel.hpp"
 
 
 Map::Map()
 {
-    // std::vector<Hexagon::Type> types = {Hexagon::Type::GRASS, Hexagon::Type::WATER, Hexagon::Type::MEDICINE, Hexagon::Type::POISON, Hexagon::Type::SOIL};
-    float deltaX = 9;
-    float deltaY = 15;
-    float x = deltaX * 6;
-    float y = deltaY * 6;
-    Hexagon hex(Hexagon::Type::GRASS, x, y, 0, 0);
-    hex.getHex().setPosition(deltaX, deltaY);
+    double deltaX = 9;
+    double deltaY = 15;
+    double x = deltaX * 6;
+    double y = deltaY * 6;
+    Hexagon hex(Hexagon::Type::WATER, x, y, 0, 0);
+    hex.GetHex().setPosition((float)deltaX, (float)deltaY);
     for (size_t i = 0; i < heightInCells; ++i)
     {
         x = deltaX * 6;
@@ -25,33 +24,37 @@ Map::Map()
         {
             x += 2 * deltaX;
             int color = rand() % 6600;
-            if (color % 3 == 0)
-            {
-                hex = Hexagon(Hexagon::Type::SOIL, x, y, i, j);
-            }
-            else if (color % 43 == 0)
+            if (color % 43 == 0)
             {
 
-                hex = Hexagon(Hexagon::Type::MEDICINE, x, y, i, j);
+                hex = Pixel(x, y, i, j);
+                organisms.push_back(&hex);
             }
             else if (color % 100 == 0)
             {
 
-                hex = Hexagon(Hexagon::Type::POISON, x, y, i, j);
+               hex = Poison(x, y, i, j);
             }
             else if (color % 5 == 0)
             {
-
-                hex = Hexagon(Hexagon::Type::GRASS, x, y, i, j);
+                hex = Food(x, y, i, j);
             }
             else
             {
-                hex = Hexagon(Hexagon::Type::WATER, x, y, i, j);
+                hex = Water(x, y, i, j);
             }
             map[i].push_back(hex);
         }
         y += deltaY;
     }
+}
+
+void Map::Update()
+{
+    /*for (size_t i = 0; i < organisms.size(); ++i)
+    {
+        organisms[i]->Update();
+    }*/
 }
 
 Row& Map::operator[](size_t index)
@@ -65,27 +68,27 @@ const Row& Map::operator[](size_t index) const
 }
 
 
-unsigned int Map::getWidth()
+unsigned int Map::GetWidth()
 {
     return width;
 }
 
-unsigned int Map::getHeight()
+unsigned int Map::GetHeight()
 {
     return height;
 }
 
-size_t Map::getWidthInCells()
+size_t Map::GetWidthInCells()
 {
     return widthInCells;
 }
 
-size_t Map::getHeightInCells()
+size_t Map::GetHeightInCells()
 {
     return heightInCells;
 }
 
-void Map::setObject(Hexagon& obj)
+void Map::SetObject(const Hexagon& obj)
 {
-    map[obj.getCellStr()][obj.getCellCol()] = obj;
+    map[obj.GetCellStr()][obj.GetCellCol()] = obj;
 }
