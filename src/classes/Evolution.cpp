@@ -4,7 +4,6 @@
 Evolution::Evolution()
 {
     map = Map();
-    sunMap = SunMap();
     window.create(sf::VideoMode(2000, 1000), "Evolution");
 }
 
@@ -24,22 +23,17 @@ void Evolution::run()
             window.clear();
         }
 
-        for (size_t i = 1; i < map.getHeightInCells(); ++i)
+        for (size_t i = 1; i < map.GetHeightInCells(); ++i)
         {
-            for (size_t j = 0; j < map.getWidthInCells(); ++j)
+            for (size_t j = 0; j < map.GetWidthInCells(); ++j)
             {
-                map[i][j].getHex().setPosition(map[i][j].getX(), map[i][j].getY());
-                window.draw(map[i][j].getHex());
-                map[i][j].Update(map, sunMap);
+                map[i][j].GetHex().setPosition((float)map[i][j].GetX(), (float)map[i][j].GetY());
+                window.draw(map[i][j].GetHex());
             }
         }
-        for (size_t j = 0; j < sunMap.getWidthInCells(); ++j)
-        {
-            sunMap.getGrafics()[j].hexagon.setPosition(sunMap.getGrafics()[j].X, sunMap.getGrafics()[j].Y);
-            window.draw(sunMap.getGrafics()[j].hexagon);
-        }
-        sunMap.Update(&window);
+
+        //map.Update();
         window.display();
-        //  std::this_thread::sleep_for(std::chrono::seconds(1));
+        std::this_thread::sleep_for(std::chrono::milliseconds(300));
     }
 }
