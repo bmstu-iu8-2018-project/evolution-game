@@ -4,7 +4,7 @@
 Evolution::Evolution()
 {
     map = Map();
-    window.create(sf::VideoMode(2000, 1000), "Evolution");
+    window.create(sf::VideoMode(map.GetWidth(), map.GetHeight()), "Evolution");
 }
 
 void Evolution::run()
@@ -31,8 +31,7 @@ void Evolution::run()
                 window.draw(map[i][j].GetHex());
             }
         }
-
-        //map.Update();
+        map.Update();
         window.display();
         std::this_thread::sleep_for(std::chrono::milliseconds(300));
     }
