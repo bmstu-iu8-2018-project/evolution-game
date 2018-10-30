@@ -6,10 +6,11 @@
 #include <ctime>
 #include <iostream>
 #include <map>
+#include <memory>
 #include <random>
 #include <vector>
 
-#include "Hexagon.hpp"
+class Hexagon;
 
 class Brain
 {
@@ -20,10 +21,7 @@ class Brain
     std::vector<double> weightsOfThirdLayer;
     double learnigRate = 0.01;
 
-    double sigmoid(double a)
-    {
-        return 1 / (1 + exp(-a));
-    }
+
 public:
     double doublerand()
     {
@@ -31,16 +29,19 @@ public:
         static std::uniform_real_distribution<double> distribution;
         return distribution(rng_engine);
     }
-
+    double sigmoid(const double a) const
+    {
+        return 1 / (1 + exp(-a));
+    }
     Brain();
     ~Brain() = default;
     Brain(const Brain& brain);
     Brain& operator=(const Brain& brain);
-    std::vector<bool> CreateVectorInput(const std::vector<Hexagon*> surroundingObjects);
+    std::vector<bool> CreateVectorInput(const std::vector<std::shared_ptr<Hexagon>> surroundingObjects) const;
     //  Функция принимает на вход вектор указателей на объекты, окружающие пикселя и находящиеся в поле видимости
-    double Think(const std::vector<Hexagon*> surroundingObjects3);
+    double Think(const std::vector<std::shared_ptr<Hexagon>>) const;
     //  проверка на 0.3
-    Hexagon* GetSolution(const std::vector<Hexagon*> surroundingObjects6);
+    std::shared_ptr<Hexagon> GetSolution(const std::vector<std::shared_ptr<Hexagon>>) const;
     void ModifyBrain();
 };
 

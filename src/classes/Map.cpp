@@ -2,6 +2,12 @@
 #include "Food.hpp"
 #include "Pixel.hpp"
 
+int intrand(int a, int b)
+{
+    static std::default_random_engine e;
+    static std::uniform_int_distribution<> dis(a, b);
+    return dis(e);
+}
 
 Map::Map()
 {
@@ -9,8 +15,9 @@ Map::Map()
     double deltaY = 15;
     double x = deltaX * 6;
     double y = deltaY * 6;
-    Hexagon hex(Hexagon::Type::WATER, x, y, 0, 0);
-    hex.GetHex().setPosition((float)deltaX, (float)deltaY);
+    organisms.clear();
+    std::shared_ptr<Hexagon> hex(new Hexagon(Hexagon::Type::WATER, x, y, 0, 0));
+    hex->GetHex().setPosition((float)deltaX, (float)deltaY);
     for (size_t i = 0; i < heightInCells; ++i)
     {
         x = deltaX * 6;
@@ -23,25 +30,25 @@ Map::Map()
         for (size_t j = 0; j < widthInCells; ++j)
         {
             x += 2 * deltaX;
-            int color = rand() % 6600;
+            int color = intrand(0, 6600);
             if (color % 43 == 0)
             {
+                hex = std::shared_ptr<Hexagon>(new Pixel(x, y, i, j));
+                organisms.push_back(std::shared_ptr<Pixel>(new Pixel(x, y, i, j)));
 
-                hex = Pixel(x, y, i, j);
-                organisms.push_back(&hex);
             }
             else if (color % 100 == 0)
             {
 
-               hex = Poison(x, y, i, j);
+               hex = std::shared_ptr<Hexagon>(new Poison(x, y, i, j));
             }
             else if (color % 5 == 0)
             {
-                hex = Food(x, y, i, j);
+                hex = std::shared_ptr<Hexagon>(new Food(x, y, i, j));
             }
             else
             {
-                hex = Water(x, y, i, j);
+                hex = std::shared_ptr<Hexagon>(new Water(x, y, i, j));
             }
             map[i].push_back(hex);
         }
@@ -51,10 +58,8 @@ Map::Map()
 
 void Map::Update()
 {
-    /*for (size_t i = 0; i < organisms.size(); ++i)
-    {
-        organisms[i]->Update();
-    }*/
+    int size = organisms.size();
+    organisms[0]->Update(*this);
 }
 
 Row& Map::operator[](size_t index)
@@ -68,27 +73,38 @@ const Row& Map::operator[](size_t index) const
 }
 
 
-unsigned int Map::GetWidth()
+unsigned int Map::GetWidth() const
 {
     return width;
 }
 
-unsigned int Map::GetHeight()
+unsigned int Map::GetHeight() const
 {
     return height;
 }
 
-size_t Map::GetWidthInCells()
+size_t Map::GetWidthInCells() const
 {
     return widthInCells;
 }
 
-size_t Map::GetHeightInCells()
+size_t Map::GetHeightInCells() const
 {
     return heightInCells;
 }
 
-void Map::SetObject(const Hexagon& obj)
+/*void Map::SetObject(const Hexagon& obj)
 {
     map[obj.GetCellStr()][obj.GetCellCol()] = obj;
+}*/
+void Map::Swap(std::shared_ptr<Hexagon> hex1, std::shared_ptr<Hexagon> hex2)
+{
+    std::swap(hex1, hex2);
+    /*std::swap(hex1->GetX(), hex2->GetX());
+    std::swap(hex1->GetY(), hex2->GetY());
+    std::swap(hex1->GetCellStr(), hex2->GetCellStr());
+    std::swap(hex1->GetCellCol(), hex2->GetCellCol());*/
+    std::swap(hex1->GetType(), hex2->GetType());
+    std::swap(hex1->GetLifes(), hex2->GetLifes());
+    std::swap(hex1->GetMedicine(), hex2->GetMedicine());
 }

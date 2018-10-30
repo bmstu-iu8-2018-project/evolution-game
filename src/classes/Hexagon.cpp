@@ -1,6 +1,7 @@
 #include "Hexagon.hpp"
 #include "Map.hpp"
 
+
 Hexagon::Hexagon(const Type& type1, double xNew, double yNew, size_t cellStrNew, size_t cellColNew)
         :    type(type1),
              x(xNew),
@@ -9,7 +10,8 @@ Hexagon::Hexagon(const Type& type1, double xNew, double yNew, size_t cellStrNew,
              cellCol(cellColNew),
              lifes(99)
 {
-    if (type1 == Type::FOOD)
+   // brain = std::make_shared<Brain>(nullptr);
+    /*if (type1 == Type::FOOD)
     {
         hexagon.setFillColor(sf::Color(93, 161, 48)); // Green
         medicine = rand() % 5;
@@ -18,19 +20,19 @@ Hexagon::Hexagon(const Type& type1, double xNew, double yNew, size_t cellStrNew,
     {
         hexagon.setFillColor(sf::Color(207, 66, 52)); // Красный
         medicine = rand() % 12;
-    }
+    }*/
     /*else if (type1 == Type::SOIL)
     {
         hexagon.setFillColor(sf::Color(131, 77, 24)); // Коричневый
         Medicine = 0;
     }*/
-    else if (type1 == Type::WATER)
+    /*else if (type1 == Type::WATER)
     {
         hexagon.setFillColor(sf::Color(66, 170, 255)); // Голубой
         medicine = 0;
     }
     hexagon.setOutlineThickness(1);
-    hexagon.setOutlineColor(sf::Color::Black);
+    hexagon.setOutlineColor(sf::Color::Black);*/
 }
 
 /*Hexagon::Hexagon(const Hexagon& hex)
@@ -69,6 +71,7 @@ void Hexagon::Swap(Hexagon& hex)
         std::swap(cellStr, hex.cellStr);
         std::swap(cellCol, hex.cellCol);
         std::swap(medicine, hex.medicine);
+        std::swap(brain, hex.brain);
     }
 }
 
@@ -87,17 +90,17 @@ sf::CircleShape& Hexagon::GetHex()
     return hexagon;
 }
 
-size_t Hexagon::GetCellStr() const
+size_t& Hexagon::GetCellStr()
 {
     return cellStr;
 }
 
-size_t  Hexagon::GetCellCol() const
+size_t&  Hexagon::GetCellCol()
 {
     return cellCol;
 }
 
-Hexagon::Type Hexagon::GetType() const
+Hexagon::Type& Hexagon::GetType()
 {
     return type;
 }

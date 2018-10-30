@@ -8,6 +8,9 @@
 #include <set>
 #include <atomic>
 #include <SFML/Graphics/CircleShape.hpp>
+#include "Brain.hpp"
+
+class Map;
 
 class Hexagon
 {
@@ -21,6 +24,7 @@ public:
         PIXEL
         //  SOIL
     };
+    std::shared_ptr<Brain> brain;
 public:
     Hexagon() = default;
 
@@ -37,14 +41,14 @@ public:
 
     sf::CircleShape& GetHex();
 
-    size_t GetCellStr() const;
-    size_t  GetCellCol() const;
+    size_t& GetCellStr();
+    size_t&  GetCellCol();
 
-    Type GetType() const;
+    Type& GetType();
     double& GetLifes();
     double& GetMedicine();
 
-    void Die();
+    //  void Die();
 
 protected:
     sf::CircleShape hexagon = sf::CircleShape(10, 6); // сам шестиугольник
