@@ -15,9 +15,8 @@ Map::Map()
     double deltaY = 15;
     double x = deltaX * 6;
     double y = deltaY * 6;
-    organisms.clear();
-    std::shared_ptr<Hexagon> hex(new Hexagon(Hexagon::Type::WATER, x, y, 0, 0));
-    hex->GetHex().setPosition((float)deltaX, (float)deltaY);
+    Hexagon hex = Hexagon(Hexagon::Type::WATER, x, y, 0, 0);
+    hex.SetHex().setPosition((float)deltaX, (float)deltaY);
     for (size_t i = 0; i < heightInCells; ++i)
     {
         x = deltaX * 6;
@@ -33,22 +32,22 @@ Map::Map()
             int color = intrand(0, 6600);
             if (color % 43 == 0)
             {
-                hex = std::shared_ptr<Hexagon>(new Pixel(x, y, i, j));
-                organisms.push_back(std::shared_ptr<Pixel>(new Pixel(x, y, i, j)));
 
+                organisms.push_back(new Pixel(x, y, i, j));
+                hex = *organisms.back();
             }
             else if (color % 100 == 0)
             {
 
-               hex = std::shared_ptr<Hexagon>(new Poison(x, y, i, j));
+               hex = Poison(x, y, i, j);
             }
             else if (color % 5 == 0)
             {
-                hex = std::shared_ptr<Hexagon>(new Food(x, y, i, j));
+                hex = Food(x, y, i, j);
             }
             else
             {
-                hex = std::shared_ptr<Hexagon>(new Water(x, y, i, j));
+                hex = Water(x, y, i, j);
             }
             map[i].push_back(hex);
         }
@@ -58,8 +57,12 @@ Map::Map()
 
 void Map::Update()
 {
-    int size = organisms.size();
-    organisms[0]->Update(*this);
+    size_t size = organisms.size();
+    //organisms[0].Update(*this);
+    for (size_t i = 0; i < organisms.size(); ++i)
+    {
+        organisms[i]->Update(*this);
+    }
 }
 
 Row& Map::operator[](size_t index)
@@ -93,18 +96,27 @@ size_t Map::GetHeightInCells() const
     return heightInCells;
 }
 
-/*void Map::SetObject(const Hexagon& obj)
+void Map::SetObject(const Pixel& obj)
 {
     map[obj.GetCellStr()][obj.GetCellCol()] = obj;
-}*/
-void Map::Swap(std::shared_ptr<Hexagon> hex1, std::shared_ptr<Hexagon> hex2)
+}
+
+void Map::SetObject(const Hexagon& obj)
+{
+    map[obj.GetCellStr()][obj.GetCellCol()] = obj;
+}
+void Map::Swap(Hexagon& hex1, Hexagon& hex2)
 {
     std::swap(hex1, hex2);
-    /*std::swap(hex1->GetX(), hex2->GetX());
-    std::swap(hex1->GetY(), hex2->GetY());
-    std::swap(hex1->GetCellStr(), hex2->GetCellStr());
-    std::swap(hex1->GetCellCol(), hex2->GetCellCol());*/
-    std::swap(hex1->GetType(), hex2->GetType());
-    std::swap(hex1->GetLifes(), hex2->GetLifes());
-    std::swap(hex1->GetMedicine(), hex2->GetMedicine());
+    hex1.Swap(hex2);
+    //organisms[] = &hex2;
+    /*std::swap(hex1, hex2);
+    std::swap(hex1->SetType(), hex2->SetType());
+    std::swap(hex1->SetLifes(), hex2->SetLifes());
+    std::swap(hex1->SetMedicine(), hex2->SetMedicine());*/
 }
+
+/*std::swap(hex1->GetX(), hex2->GetX());
+std::swap(hex1->GetY(), hex2->GetY());
+std::swap(hex1->GetCellStr(), hex2->GetCellStr());
+std::swap(hex1->GetCellCol(), hex2->GetCellCol());*/

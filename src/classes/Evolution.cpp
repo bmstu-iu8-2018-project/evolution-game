@@ -27,12 +27,12 @@ void Evolution::run()
         {
             for (size_t j = 0; j < map.GetWidthInCells(); ++j)
             {
-                map[i][j].GetHex().setPosition((float)map[i][j].GetX(), (float)map[i][j].GetY());
+                map[i][j].SetHex().setPosition((float)map[i][j].SetX(), (float)map[i][j].SetY());
                 window.draw(map[i][j].GetHex());
             }
         }
         map.Update();
         window.display();
-        std::this_thread::sleep_for(std::chrono::milliseconds(300));
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
 }

@@ -7,7 +7,6 @@ class Food
         : public Hexagon
 {
 public:
-    Food() = default;
     Food(const double xNew, const double yNew, const size_t CellStrNew, const size_t CellColNew)
         :    Hexagon(Type::FOOD, xNew, yNew, CellStrNew, CellColNew)
     {
@@ -16,6 +15,8 @@ public:
         hexagon.setOutlineColor(sf::Color::Black);
         medicine = rand() % 5;
     }
+    void Update(Map& map)
+    {}
     ~Food() override = default;
 };
 
@@ -23,7 +24,6 @@ class Water
         : public Hexagon
 {
 public:
-    Water() = default;
     Water(const double xNew, const double yNew, const size_t CellStrNew, const size_t CellColNew)
             :    Hexagon(Type::WATER, xNew, yNew, CellStrNew, CellColNew)
     {
@@ -32,6 +32,8 @@ public:
         hexagon.setOutlineColor(sf::Color::Black);
         medicine = 0;
     }
+    void Update(Map& map)
+    {}
     ~Water() override = default;
 };
 
@@ -39,7 +41,6 @@ class Poison
         : public Hexagon
 {
 public:
-    Poison() = default;
     Poison(const double xNew, const double yNew, const size_t CellStrNew, const size_t CellColNew)
             :    Hexagon(Type::POISON, xNew, yNew, CellStrNew, CellColNew)
     {
@@ -48,6 +49,8 @@ public:
         hexagon.setOutlineThickness(1);
         hexagon.setOutlineColor(sf::Color::Black);
     }
+    void Update(Map& map)
+    {}
     ~Poison() override = default;
 };
 

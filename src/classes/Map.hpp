@@ -12,30 +12,30 @@ class Pixel;
 
 class Row
 {
-    std::vector<std::shared_ptr<Hexagon>> row;
+    std::vector<Hexagon> row;
 public:
     Row() = default;
     ~Row() = default;
     Hexagon& operator[](size_t index)
     {
-        return *row[index];
+        return row[index];
     }
     const Hexagon& operator[](size_t index) const
     {
-        return *row[index];
+        return row[index];
     }
-    void push_back(const std::shared_ptr<Hexagon> hex)
+    void push_back(const Hexagon& hex)
     {
         row.push_back(hex);
     }
-    const double getPositionX(size_t index) const
+    const double getPositionX(size_t index)
     {
-        return row[index]->GetX();
+        return row[index].GetX();
     }
 
-    const double getPositionY(size_t index) const
+    const double getPositionY(size_t index)
     {
-        return row[index]->GetY();
+        return row[index].GetY();
     }
 };
 
@@ -56,15 +56,16 @@ public:
     size_t GetWidthInCells() const;
     size_t GetHeightInCells() const;
 
+    void SetObject(const Pixel& obj);
     void SetObject(const Hexagon&);
-    void Swap(std::shared_ptr<Hexagon>, std::shared_ptr<Hexagon>);
+    void Swap(Hexagon&, Hexagon&);
 private:
     static const unsigned int width = 2000;
     static const unsigned int height = 1000;
     static const size_t widthInCells = 94;
     static const size_t heightInCells = 60;
     std::vector<Row> map;
-    std::vector<std::shared_ptr<Pixel>> organisms;
+    std::vector<Pixel*> organisms;
 };
 
 #endif

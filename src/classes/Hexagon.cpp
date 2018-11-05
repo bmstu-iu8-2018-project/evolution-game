@@ -35,14 +35,20 @@ Hexagon::Hexagon(const Type& type1, double xNew, double yNew, size_t cellStrNew,
     hexagon.setOutlineColor(sf::Color::Black);*/
 }
 
-/*Hexagon::Hexagon(const Hexagon& hex)
-    :  type(hex.type),
-       x(hex.x),
-       y(hex.y),  //  Почему когда объявляю конструктор ничего не работает
-       cellStr(hex.cellStr),
-       cellCol(hex.cellCol),
-       lifes(hex.lifes)
-{}*/
+Hexagon::Hexagon(const Type& type1,const sf::CircleShape hexagon1, const float xNew, const float yNew, const size_t cellStrNew,
+                 const size_t cellColNew, const double lifesNew, Brain brainNew)
+        :    type(type1),
+             hexagon(hexagon1),
+             x(xNew),
+             y(yNew),
+             cellStr(cellStrNew),
+             cellCol(cellColNew),
+             lifes(lifesNew),
+             brain(brainNew)
+{
+    hexagon.setOutlineThickness(1);
+    hexagon.setOutlineColor(sf::Color::Black);
+}
 
 Hexagon& Hexagon::operator=(const Hexagon& hex)
 {
@@ -63,53 +69,102 @@ void Hexagon::Swap(Hexagon& hex)
 {
     if (this != &hex)
     {
-        std::swap(hexagon, hex.hexagon);
+        //  std::swap(hexagon.getFillColor(), hex.hexagon.getFillColor());
+        /*sf::Color copy = hexagon.getFillColor();
+        hexagon.setFillColor(hex.hexagon.getFillColor());
+        hex.hexagon.setFillColor(copy);
+        //hexagon.setFillColor(sf::Color::White);
+        //hex.hexagon.setFillColor(sf::Color(66, 170, 255));
+        //std::swap(hexagon, hex.hexagon);
+        //sf::Color a = hexagon.getFillColor();
+        // sf::Color b =  hex.hexagon.getFillColor();
         std::swap(type, hex.type);
+        std::swap(lifes, hex.lifes);
+        std::swap(medicine, hex.medicine);
+        std::swap(brain, hex.brain);*/
         std::swap(x, hex.x);
         std::swap(y, hex.y);
-        std::swap(lifes, hex.lifes);
         std::swap(cellStr, hex.cellStr);
         std::swap(cellCol, hex.cellCol);
-        std::swap(medicine, hex.medicine);
-        std::swap(brain, hex.brain);
+        //std::swap(hexagon, hex.hexagon);
+        //hexagon.setFillColor(sf::Color(66, 170, 255));
     }
 }
 
-double& Hexagon::GetX()
+
+double Hexagon::GetX() const
 {
     return x;
 }
 
-double& Hexagon::GetY()
+double Hexagon::GetY() const
 {
     return y;
 }
 
-sf::CircleShape& Hexagon::GetHex()
+sf::CircleShape Hexagon::GetHex() const
 {
     return hexagon;
 }
 
-size_t& Hexagon::GetCellStr()
+size_t Hexagon::GetCellStr() const
 {
     return cellStr;
 }
 
-size_t&  Hexagon::GetCellCol()
+size_t  Hexagon::GetCellCol() const
 {
     return cellCol;
 }
 
-Hexagon::Type& Hexagon::GetType()
+Hexagon::Type Hexagon::GetType() const
 {
     return type;
 }
 
-double& Hexagon::GetLifes()
+double Hexagon::GetLifes() const
 {
     return lifes;
 }
-double& Hexagon::GetMedicine()
+double Hexagon::GetMedicine() const
+{
+    return medicine;
+}
+double& Hexagon::SetX()
+{
+    return x;
+}
+
+double& Hexagon::SetY()
+{
+    return y;
+}
+
+sf::CircleShape& Hexagon::SetHex()
+{
+    return hexagon;
+}
+
+size_t& Hexagon::SetCellStr()
+{
+    return cellStr;
+}
+
+size_t&  Hexagon::SetCellCol()
+{
+    return cellCol;
+}
+
+Hexagon::Type& Hexagon::SetType()
+{
+    return type;
+}
+
+double& Hexagon::SetLifes()
+{
+    return lifes;
+}
+double& Hexagon::SetMedicine()
 {
     return medicine;
 }

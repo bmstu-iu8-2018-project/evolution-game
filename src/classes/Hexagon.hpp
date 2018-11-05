@@ -9,6 +9,7 @@
 #include <atomic>
 #include <SFML/Graphics/CircleShape.hpp>
 #include "Brain.hpp"
+#include <boost/any.hpp>
 
 class Map;
 
@@ -24,29 +25,37 @@ public:
         PIXEL
         //  SOIL
     };
-    std::shared_ptr<Brain> brain;
+    Brain brain;
 public:
     Hexagon() = default;
 
     virtual ~Hexagon() = default;
 
     Hexagon(const Type& type1, double xNew, double yNew, size_t CellStrNew, size_t CellColNew);
-    // Hexagon(const Hexagon& hex);
+    Hexagon(const Type& type, const sf::CircleShape hexagon1, const float xNew, const float yNew, const size_t CellStrNew,
+                 const size_t CellColNew, const double lifesNew, Brain brainNew);
     Hexagon& operator=(const Hexagon& hex);
 
     void Swap(Hexagon& hex);
+    //virtual void Update(Map& map);
 
-    double& GetX();
-    double& GetY();
+    double GetX() const;
+    double GetY() const;
+    sf::CircleShape GetHex() const;
+    size_t GetCellStr() const;
+    size_t  GetCellCol() const;
+    Type GetType() const;
+    double GetLifes() const;
+    double GetMedicine() const;
 
-    sf::CircleShape& GetHex();
-
-    size_t& GetCellStr();
-    size_t&  GetCellCol();
-
-    Type& GetType();
-    double& GetLifes();
-    double& GetMedicine();
+    double& SetX();
+    double& SetY();
+    sf::CircleShape& SetHex();
+    size_t& SetCellStr();
+    size_t&  SetCellCol();
+    Type& SetType();
+    double& SetLifes();
+    double& SetMedicine();
 
     //  void Die();
 
