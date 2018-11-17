@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <ctime>
+#include <fstream>
 #include <map>
 #include <iostream>
 #include <string>
@@ -19,7 +20,7 @@ class Brain
 public:
     Brain(const size_t &inInputs = 10, const size_t &inOutputs = 7, const size_t &inNumOfHiddenLayers = 2,
                   const size_t &inNumOfNeuronsInHiddenLayers = 10);
-
+    Brain(const std::string&);
     ~Brain() = default;
 
     void Train() const;
@@ -36,13 +37,15 @@ public:
 
     void ResetWeights() const;
 
-    const std::vector<bool> CreateVectorInput(const std::vector<Hexagon*>) const;
+    const std::vector<bool> CreateVectorInput(const std::vector<Hexagon*>&) const;
 
-    double Think(const std::vector<Hexagon*>) const;
+    double Think(const std::vector<Hexagon*>&) const;
 
-    Hexagon* GetSolution(const std::vector<Hexagon*>) const;
+    Hexagon* GetSolution(const std::vector<Hexagon*>&) const;
 
-    void ShowNetworkState() const;
+    void SaveNetworkState(const std::string&) const;
+
+    void UploadNetworkState(const std::string&);
 
 private:
     NeuronCreator* neuronCreator;
@@ -51,6 +54,13 @@ private:
     size_t inputs;
     size_t outputs;
     size_t hidden;
+
+    int intrand(int a, int b) const
+    {
+        static std::default_random_engine e;
+        static std::uniform_int_distribution<> dis(a, b);
+        return dis(e);
+    }
 };
 
 #endif

@@ -3,8 +3,10 @@
 
 #include "Link.hpp"
 #include "NetworkFunction.hpp"
-#include <vector>
+#include <fstream>
 #include <iostream>
+#include <vector>
+
 
 const double LearningRate = 0.01;
 
@@ -35,7 +37,7 @@ public:
     void SetSumOfWeights(double);
     virtual void SetInputLink(Link*);
 
-    virtual void ShowNeuronState() const;
+    virtual void SaveNeuronState(const std::string&) const;
 private:
     NetworkFunction* function;
     std::vector<Link*> inputLinks;
@@ -51,11 +53,7 @@ class OutputLayerNeuron
 public:
     explicit OutputLayerNeuron(Neuron* inNeuron)
         : Neuron(*inNeuron)
-    {
-        mOutputCharge = 0;
-    };
-private:
-    double mOutputCharge;
+    {};
 };
 
 

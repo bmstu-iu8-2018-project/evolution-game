@@ -3,13 +3,13 @@
 Neuron::Neuron()
         :   function(new Sigmoid),
             sumOfWeights(0)
-{};
+{}
 
 
 Neuron::Neuron(NetworkFunction* func)
         :   function(func),
             sumOfWeights(0)
-{};
+{}
 
 Neuron::Neuron(std::vector<Neuron*>& neuronsLinks, NetworkFunction* func)
 {
@@ -39,12 +39,12 @@ Neuron::~Neuron()
 Link* Neuron::at(const size_t& index) const
 {
     return linksToNeurons[index];
-};
+}
 
 void Neuron::Input(double deltaWeight)
 {
     sumOfWeights += deltaWeight;
-};
+}
 
 double Neuron::Fire() const
 {
@@ -65,17 +65,17 @@ double Neuron::Fire() const
 std::vector<Link*> Neuron::GetLinksToNeurons() const
 {
     return linksToNeurons;
-};
+}
 
 size_t Neuron::GetNumOfLinks() const
 {
     return linksToNeurons.size();
-};
+}
 
 size_t Neuron::GetNumOfInputLinks() const
 {
     return inputLinks.size();
-};
+}
 
 double Neuron::GetSumOfWeights() const
 {
@@ -85,51 +85,55 @@ double Neuron::GetSumOfWeights() const
 std::vector<Link*> Neuron::GetInputLinks() const
 {
     return inputLinks;
-};
+}
 
 void Neuron::ResetSumOfWeights()
 {
     sumOfWeights = 0;
-};
+}
 
 double Neuron::Process() const
 {
     return function->Process(sumOfWeights);
-};
+}
 
 double Neuron::Process(double x) const
 {
     return function->Process(x);
-};
+}
 
 double Neuron::Derivative() const
 {
     return function->Derivative(sumOfWeights);
-};
+}
 
 void Neuron::SetLinkToNeuron(Link* newLLink)
 {
     linksToNeurons.push_back(newLLink);
-};
+}
 
 void Neuron::SetSumOfWeights(double x)
 {
     sumOfWeights = function->Process(x);
-};
+}
 
 void Neuron::SetInputLink(Link* newLLink)
 {
     inputLinks.push_back(newLLink);
-};
+}
 
-void Neuron::ShowNeuronState() const
+void Neuron::SaveNeuronState(const std::string& path_to_file) const
 {
+    std::fstream fl(path_to_file, std::ios::app);
+    fl << "                [";
     for (size_t iNumOfOutLinks = 0; iNumOfOutLinks < linksToNeurons.size(); iNumOfOutLinks++)
     {
-        Link * pNeuralLink = linksToNeurons.at(iNumOfOutLinks);
-        std::cout << "    Link index: " << iNumOfOutLinks << std::endl;
-        std::cout << "      Weight: " << pNeuralLink->GetWeight() << std::endl;
+        fl << linksToNeurons.at(iNumOfOutLinks)->GetWeight() ;
+        if (iNumOfOutLinks != linksToNeurons.size() - 1)
+            fl << ", ";
     }
+    fl << "]";
+    fl.close();
 }
 
 

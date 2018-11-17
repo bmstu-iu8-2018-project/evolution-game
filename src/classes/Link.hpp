@@ -9,7 +9,7 @@ public:
     Link();
     explicit Link(Neuron* neuronLinkedTo, double weightToNeuron = 0);
 
-    const double GetWeight() const;
+    double GetWeight() const;
     void SetWeight(const double);
   
     void SetNeuronLinkedTo(Neuron*);

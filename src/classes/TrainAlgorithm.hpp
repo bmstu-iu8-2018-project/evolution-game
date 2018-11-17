@@ -11,10 +11,10 @@ public:
     TrainAlgorithm() = default;
     ~TrainAlgorithm() = default;
     explicit TrainAlgorithm(Brain*);
-	void Train() const;
-	void WeightsInitialization() const;
+	void Train();
+	void WeightsInitialization();
 private:
-	void CommonInitialization() const;
+	void CommonInitialization();
     Brain* brain;
 };
 

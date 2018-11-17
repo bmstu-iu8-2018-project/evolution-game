@@ -1,5 +1,7 @@
 #include "Brain.hpp"
 #include "Hexagon.hpp"
+#include "Parser.hpp"
+
 
 Brain::Brain(const size_t& inInputs, const size_t& inOutputs, const size_t& inNumOfHiddenLayers, const size_t& inNumOfNeuronsInHiddenLayers)
 {
@@ -26,8 +28,8 @@ Brain::Brain(const size_t& inInputs, const size_t& inOutputs, const size_t& inNu
 			std::vector<Neuron*> HiddenLayer;
 			for (size_t j = 0; j < inNumOfNeuronsInHiddenLayers; j++)
 			{
-				Neuron* hidden = neuronCreator->CreateHiddenNeuron(layers[0], OutputNeuronsFunc);
-				HiddenLayer.push_back(hidden);
+				Neuron* hiddenneuron = neuronCreator->CreateHiddenNeuron(layers[0], OutputNeuronsFunc);
+				HiddenLayer.push_back(hiddenneuron);
 			}
 			layers.insert(layers.begin(),HiddenLayer);
 		}
@@ -46,25 +48,26 @@ Brain::Brain(const size_t& inInputs, const size_t& inOutputs, const size_t& inNu
 	}
 }
 
+
 std::vector<Neuron*> Brain::GetLayer(size_t index) const
 {
     return layers[index];
-};
+}
 
 size_t Brain::size() const
 {
     return layers.size();
-};
+}
 
 std::vector<Neuron*> Brain::GetOutputLayer() const
 {
     return layers[layers.size() - 1];
-};
+}
 
 std::vector<Neuron*> Brain::GetInputLayer() const
 {
     return layers[0];
-};
+}
 size_t Brain::GetInputs() const
 {
     return inputs;
@@ -77,7 +80,7 @@ void Brain::Train() const
 
 //  Функция принимает на вход вектор указателей на объекты, окружающиx пикселя
 //  Если рядом стоит другой пиксель, то мы не можем перейти на клетку, на которой он стоит
-const std::vector<bool> Brain::CreateVectorInput(const std::vector<Hexagon*> SurroundingObjects) const
+const std::vector<bool> Brain::CreateVectorInput(const std::vector<Hexagon*>& SurroundingObjects) const
 {
     std::vector<bool> input;
     for (auto& a : SurroundingObjects)
@@ -93,7 +96,7 @@ const std::vector<bool> Brain::CreateVectorInput(const std::vector<Hexagon*> Sur
     }
     return input;
 }
-double Brain::Think(const std::vector<Hexagon*> surroundingObjects3) const
+double Brain::Think(const std::vector<Hexagon*>& surroundingObjects3) const
 {
     std::vector<bool> input = CreateVectorInput(surroundingObjects3);
     std::srand(std::time(nullptr)); /// FIXME :  Добавь значение уровня жизни
@@ -105,15 +108,17 @@ double Brain::Think(const std::vector<Hexagon*> surroundingObjects3) const
             result += GetLayer(1).at(i)->GetInputLinks().at(k)->GetWeight() * input[k];
         }
         GetLayer(1).at(i)->SetSumOfWeights(result);
+        result = 0;
     }
-    result = 0;
     for (size_t i = 0; i < GetLayer(2).at(0)->GetNumOfInputLinks(); ++i)
     {
         for (size_t k = 0; k < GetLayer(1).size(); ++k)
         {
             result += GetLayer(2).at(i)->GetInputLinks().at(k)->GetWeight() * GetLayer(1).at(k)->GetSumOfWeights();
         }
+        result = GetLayer(2).at(i)->Process(result);
         GetLayer(2).at(i)->SetSumOfWeights(result);
+        result = 0;
     }
     result = 0;
     double sumresult = 0;
@@ -123,15 +128,17 @@ double Brain::Think(const std::vector<Hexagon*> surroundingObjects3) const
         {
             result += GetLayer(3).at(i)->GetInputLinks().at(k)->GetWeight() * GetLayer(2).at(k)->GetSumOfWeights();
         }
+        GetOutputLayer().at(i)->Process(result);
         GetOutputLayer().at(i)->SetSumOfWeights(result);
         sumresult += result;
+        result = 0;
     }
     return GetLayer(1).at(1)->Process(sumresult);
 }
 
 
-/// FIXME :   проверка на 0.3
-Hexagon* Brain::GetSolution(const std::vector<Hexagon*> surroundingObjects6) const
+
+Hexagon* Brain::GetSolution(const std::vector<Hexagon*>& surroundingObjects6) const
 {
     std::vector<Hexagon*> sObjectsCopy = surroundingObjects6;
     std::srand(std::time(nullptr));
@@ -139,15 +146,26 @@ Hexagon* Brain::GetSolution(const std::vector<Hexagon*> surroundingObjects6) con
     for (size_t i = 0; i < surroundingObjects6.size(); ++i)
     {
         std::vector<Hexagon*> vec(sObjectsCopy.begin(), sObjectsCopy.begin() + 3);
-        sObjectsCopy.insert(sObjectsCopy.begin(), sObjectsCopy.back());
-        sObjectsCopy.pop_back();
+        Hexagon* hex = sObjectsCopy.back();
+        sObjectsCopy.insert(sObjectsCopy.begin(), hex);
+        sObjectsCopy.erase(sObjectsCopy.begin() + surroundingObjects6.size() - 1);
         values.push_back(Think(vec));
     }
     auto it = std::max_element(values.begin(), values.end());
     size_t result = (size_t)(it - values.begin());
     if (result == 7)
         return nullptr;
-    return surroundingObjects6[result];
+    sObjectsCopy.clear();
+    for (size_t i = 0; i < values.size(); ++i)
+    {
+        if (*it == values[i])
+        {
+            sObjectsCopy.push_back(surroundingObjects6[i]);
+        }
+    }
+    if (sObjectsCopy.size() > 1)
+        result = intrand(0, sObjectsCopy.size());
+    return sObjectsCopy[result];
 }
 
 void Brain::ResetWeights() const
@@ -159,19 +177,31 @@ void Brain::ResetWeights() const
 			layers.at(i).at(indexOfOutputElements)->ResetSumOfWeights();
 		}
 	}
-
 }
 
-void Brain::ShowNetworkState() const
+void Brain::SaveNetworkState(const std::string& path_to_file) const
 {
-	std::cout << std::endl;
-	for (size_t indOfLayer = 0; indOfLayer < layers.size(); indOfLayer++)
+    std::fstream fl(path_to_file, std::ios::app);
+	fl << "    " << "\"Brain\" : " << std::endl << "    {" << std::endl;
+	fl << "        " << "\"inputs\" : " << inputs << "," << std::endl;
+    fl << "        " << "\"outputs\" : " << outputs << "," << std::endl;
+    fl << "        " << "\"hidden\" : " << hidden << "," << std::endl;
+    fl << "        " << "\"layers\" : [" << std::endl;
+    for (size_t indOfLayer = 0; indOfLayer < layers.size(); indOfLayer++)
 	{
-		std::cout << "Layer index: " << indOfLayer << std::endl;
+		fl << "             [" << std::endl;
 		for (size_t indOfNeuron = 0; indOfNeuron < layers[indOfLayer].size(); indOfNeuron++)
 		{
-			std::cout << "  Neuron index: " << indOfNeuron << std::endl;
-			layers[indOfLayer].at(indOfNeuron)->ShowNeuronState();
+			layers[indOfLayer].at(indOfNeuron)->SaveNeuronState(path_to_file);
+			if (layers[indOfLayer].size() - 1 != indOfNeuron)
+			    fl << "," << std::endl;
 		}
+		fl << std::endl;
+		fl << "             ]";
+		if (layers.size() - 1 != indOfLayer)
+		    fl << "," << std::endl;
 	}
+    fl << std::endl << "         " << "]" << std::endl;
+	fl << "    }" << std::endl;
+	fl.close();
 }

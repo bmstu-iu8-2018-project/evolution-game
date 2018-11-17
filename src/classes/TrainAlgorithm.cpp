@@ -11,7 +11,7 @@ double doublerand(double a, double b)
     return dis(e);
 }
 
-void TrainAlgorithm::CommonInitialization() const
+void TrainAlgorithm::CommonInitialization()
 {
     for (size_t innerOfLayers = 0; innerOfLayers < brain->size(); innerOfLayers++)
     {
@@ -28,7 +28,7 @@ void TrainAlgorithm::CommonInitialization() const
     }
 }
 
-void TrainAlgorithm::WeightsInitialization() const
+void TrainAlgorithm::WeightsInitialization()
 {
     CommonInitialization();
 
@@ -39,9 +39,10 @@ TrainAlgorithm::TrainAlgorithm(Brain* newBrain)
     brain = newBrain;
 }
 
-
-void TrainAlgorithm::Train() const
+void TrainAlgorithm::Train()
 {
+    if (this == nullptr)
+        return;
     for (size_t innerOfLayers = 0; innerOfLayers < brain->size(); innerOfLayers++)
     {
         for (size_t innerOfNeurons = 0; innerOfNeurons < brain->GetLayer(innerOfLayers).size(); innerOfNeurons++)
@@ -56,6 +57,6 @@ void TrainAlgorithm::Train() const
         }
     }
     ///  mNeuralNetwork->UpdateWeights();
-	//  mNeuralNetwork->ResetCharges();
+    //  mNeuralNetwork->ResetCharges();
 }
 

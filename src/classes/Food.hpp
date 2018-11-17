@@ -15,9 +15,9 @@ public:
         hexagon.setOutlineColor(sf::Color::Black);
         medicine = rand() % 5;
     }
-    void Update(Map& map)
+    void Update(Map& map) override
     {}
-    ~Food() override = default;
+    ~Food() = default;
 };
 
 class Water
@@ -32,9 +32,9 @@ public:
         hexagon.setOutlineColor(sf::Color::Black);
         medicine = 0;
     }
-    void Update(Map& map)
+    void Update(Map& map) override
     {}
-    ~Water() override = default;
+    ~Water() = default;
 };
 
 class Poison
@@ -49,9 +49,9 @@ public:
         hexagon.setOutlineThickness(1);
         hexagon.setOutlineColor(sf::Color::Black);
     }
-    void Update(Map& map)
+    void Update(Map& map) override
     {}
-    ~Poison() override = default;
+    ~Poison() = default;
 };
 
 #endif //EVOLUTION_FOOD_HPP
