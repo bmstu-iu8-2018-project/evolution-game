@@ -10,6 +10,9 @@
 
 #include "NeuronCreator.hpp"
 #include "TrainAlgorithm.hpp"
+#include </home/mariasolovyova/CLionProjects/Evolution/tools/json/single_include/nlohmann/json.hpp>
+
+using Json = nlohmann::json;
 
 class Hexagon;
 
@@ -18,16 +21,16 @@ class TrainAlgorithm;
 class Brain
 {
 public:
-    Brain(const size_t &inInputs = 10, const size_t &inOutputs = 7, const size_t &inNumOfHiddenLayers = 2,
+    explicit Brain(const size_t &inInputs = 10, const size_t &inOutputs = 7, const size_t &inNumOfHiddenLayers = 2,
                   const size_t &inNumOfNeuronsInHiddenLayers = 10);
-    Brain(const std::string&);
+    Brain(const Json&);
     ~Brain() = default;
 
     void Train() const;
 
     std::vector<Neuron*> GetLayer(size_t) const;
 
-    size_t size() const;
+    size_t Size() const;
 
     std::vector<Neuron*> GetOutputLayer() const;
 

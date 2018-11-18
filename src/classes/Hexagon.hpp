@@ -25,7 +25,6 @@ public:
         PIXEL
         //  SOIL
     };
-    Brain brain;
 public:
     Hexagon() = default;
 
@@ -33,10 +32,9 @@ public:
 
     Hexagon(const Type& type1, double xNew, double yNew, size_t CellStrNew, size_t CellColNew);
     Hexagon(const Type& type, const sf::CircleShape hexagon1, const float xNew, const float yNew, const size_t CellStrNew,
-                 const size_t CellColNew, const double lifesNew, Brain brainNew);
+                 const size_t CellColNew, const double lifesNew);
     Hexagon& operator=(const Hexagon&);
 
-    void Swap(Hexagon& hex);
     virtual void Update(Map& map)
     {}
 
@@ -61,7 +59,7 @@ public:
 
     bool IsAlive();
 
-    void SaveToFile(const std::string&) const;
+    virtual void SaveToFile(const std::string&) const;
 protected:
     sf::CircleShape hexagon = sf::CircleShape(10, 6); // сам шестиугольник
     double x;  // координата по х как номер ячейки

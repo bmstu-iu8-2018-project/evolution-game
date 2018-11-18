@@ -21,6 +21,16 @@ Pixel::Pixel(const double xNew, const double yNew, const size_t CellStrNew, cons
     medicine = 0;
 }
 
+Pixel::Pixel(const double xNew, const double yNew, const size_t CellStrNew, const size_t CellColNew, Brain newBrain)
+        :    Hexagon(Type::PIXEL, xNew, yNew, CellStrNew, CellColNew),
+             brain(newBrain)
+{
+    hexagon.setFillColor(sf::Color::Yellow);
+    hexagon.setOutlineThickness(1);
+    hexagon.setOutlineColor(sf::Color::Black);
+    medicine = 0;
+}
+
 Pixel::Pixel(const sf::CircleShape hexagon1, const float xNew, const float yNew, const size_t CellStrNew,
              const size_t CellColNew, const double lifesNew, Brain brainNew)
         :    Hexagon(Type::PIXEL, xNew, yNew, CellStrNew, CellColNew)
@@ -228,4 +238,16 @@ Hexagon* Pixel::ViewNearbyCells(Map& map, const Type& tmp)
 Brain Pixel::GetBrain() const
 {
     return brain;
+}
+
+void Pixel::SaveToFile(const std::string& path_to_file) const
+{
+    std::fstream fl(path_to_file, std::ios::app);
+    fl << "    " << "\"x\"" << " : " << x << "," << std::endl;
+    fl << "    " << "\"y\"" << " : " << y << "," << std::endl;
+    fl << "    " << "\"type\"" << " : " << type << "," << std::endl;
+    fl << "    " << "\"medicine\"" << " : " << medicine << "," << std::endl;
+    fl << "    " << "\"isHealfy\"" << " : " << isHealfy << "," << std::endl;
+    fl.close();
+    brain.SaveNetworkState(path_to_file);
 }

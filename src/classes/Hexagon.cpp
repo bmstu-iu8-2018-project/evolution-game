@@ -12,15 +12,14 @@ Hexagon::Hexagon(const Type& type1, double xNew, double yNew, size_t cellStrNew,
 {}
 
 Hexagon::Hexagon(const Type& type1,const sf::CircleShape hexagon1, const float xNew, const float yNew, const size_t cellStrNew,
-                 const size_t cellColNew, const double lifesNew, Brain brainNew)
+                 const size_t cellColNew, const double lifesNew)
         :    type(type1),
              hexagon(hexagon1),
              x(xNew),
              y(yNew),
              cellStr(cellStrNew),
              cellCol(cellColNew),
-             lifes(lifesNew),
-             brain(brainNew)
+             lifes(lifesNew)
 {
     hexagon.setOutlineThickness(1);
     hexagon.setOutlineColor(sf::Color::Black);
@@ -82,11 +81,6 @@ double Hexagon::GetMedicine() const
     return medicine;
 }
 
-Brain Hexagon::GetBrain() const
-{
-    return brain;
-}
-
 void Hexagon::SetX(double newX)
 {
     x = newX;
@@ -141,5 +135,5 @@ void Hexagon::SaveToFile(const std::string& path_to_file) const
     fl << "    " << "\"medicine\"" << " : " << medicine << "," << std::endl;
     fl << "    " << "\"isHealfy\"" << " : " << isHealfy << "," << std::endl;
     fl.close();
-    brain.SaveNetworkState(path_to_file);
+    //  brain.SaveNetworkState(path_to_file);
 }

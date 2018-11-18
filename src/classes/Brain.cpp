@@ -1,11 +1,10 @@
 #include "Brain.hpp"
 #include "Hexagon.hpp"
-#include "Parser.hpp"
 
 
 Brain::Brain(const size_t& inInputs, const size_t& inOutputs, const size_t& inNumOfHiddenLayers, const size_t& inNumOfNeuronsInHiddenLayers)
 {
-	if(inInputs > 0 && inOutputs > 0)
+	if(inInputs > 0 || inOutputs > 0)
 	{
 		inputs = inInputs;
 		outputs = inOutputs;
@@ -48,13 +47,56 @@ Brain::Brain(const size_t& inInputs, const size_t& inOutputs, const size_t& inNu
 	}
 }
 
+Brain::Brain(const Json& object)
+{
+    inputs = static_cast<size_t>(object["inputs"]);
+    outputs = static_cast<size_t>(object["outputs"]);
+    hidden = static_cast<size_t>(object["hidden"]);
+    if(inputs > 0 || outputs > 0)
+    {
+        NetworkFunction* InputNeuronsFunc = new Sigmoid;
+        NetworkFunction* OutputNeuronsFunc = new Sigmoid;
+
+        std::vector<Neuron*> inputLayer;
+        std::vector<Neuron*> outputLayer;
+        neuronCreator = new PerceptronNeuronCreator;
+        algorithm = new TrainAlgorithm(this);
+
+        for (size_t inner = 0; inner < outputs; inner++)
+            outputLayer.push_back(neuronCreator->CreateOutputNeuron(OutputNeuronsFunc));
+        layers.push_back(outputLayer);
+
+        for (size_t inner = 0; inner < hidden; inner++)
+        {
+            std::vector<Neuron*> HiddenLayer;
+            for (size_t j = 0; j < hidden; j++)
+            {
+                Neuron* hiddenneuron = neuronCreator->CreateHiddenNeuron(layers[0], OutputNeuronsFunc);
+                HiddenLayer.push_back(hiddenneuron);
+            }
+            layers.insert(layers.begin(),HiddenLayer);
+        }
+
+        for (size_t inner = 0; inner < inputs; inner++)
+        {
+            inputLayer.push_back(neuronCreator->CreateInputNeuron(layers[0], InputNeuronsFunc));
+        }
+        layers.insert(layers.begin(),inputLayer);
+        algorithm->WeightsInitialization(object);
+    }
+    else
+    {
+        throw std::logic_error("Error in Brain constructor:"
+                               "The number of input and output neurons has to be more than 0");
+    }
+}
 
 std::vector<Neuron*> Brain::GetLayer(size_t index) const
 {
     return layers[index];
 }
 
-size_t Brain::size() const
+size_t Brain::Size() const
 {
     return layers.size();
 }

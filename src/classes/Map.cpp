@@ -94,9 +94,47 @@ void Map::SetPoison(int numberOfPoison)
     }
 }
 
-Map::Map(const std::string& path_to_file)
+Map::Map(const std::string& path)
 {
-
+    size_t i = 0;
+    size_t j = 0;
+   // for (size_t i = 0; i < heightInCells; ++i)
+    {
+        Row row;
+        map.push_back(row);
+       // for (size_t j = 0; j < widthInCells; ++j)
+        {
+            boost::filesystem::path path_to_file = path + "/" + std::to_string(i) + "_" + std::to_string(j);
+            if (!boost::filesystem::exists(path_to_file))
+                throw std::runtime_error("Error in uploading files");
+            std::ifstream file(path_to_file.string());
+            std::string s;
+            std::string line;
+            while (std::getline(file, line))
+                s += line;
+            file.close();
+            Json object = Json::parse(s);
+            auto x = static_cast<double>(object["x"]);
+            auto y = static_cast<double>(object["y"]);
+            auto medicine = static_cast<double>(object["medicine"]);
+            if (object["type"] == "1")
+            {
+                map[i].push_back(new Food(x, y, i, j, medicine));
+            }
+            else if (object["type"] == "2")
+            {
+                map[i].push_back(new Water(x, y, i, j));
+            }
+            else if (object["type"] == "3")
+            {
+                map[i].push_back(new Poison(x, y, i, j, medicine));
+            }
+            else if (object["type"] == "4")
+            {
+                map[i].push_back(new Pixel(x, y, i, j, Brain(object["layers"])));
+            }
+        }
+    }
 }
 
 Map& Map::operator=(const Map& mapOld)
@@ -227,18 +265,18 @@ void Map::SaveToFile() const
     std::string path_to_file;
     size_t i = 0;
     size_t j = 0;
-    //for (size_t i = 0; i < heightInCells; ++i)
-    //{
-        //for (size_t j = 0; j < widthInCells; ++j)
-        //{
+    for (size_t i = 0; i < heightInCells; ++i)
+    {
+        for (size_t j = 0; j < widthInCells; ++j)
+        {
             path_to_file = path.string() + "/" + std::to_string(i) + "_" + std::to_string(j);
             std::fstream file(path_to_file, std::ios::app);
             file << "{" << std::endl;
             map[i][j]->SaveToFile(path_to_file);
             file << "}" << std::endl;
             file.close();
-        //}
-    //}
+        }
+    }
 }
 
 void Map::UploadFromFile()
@@ -247,22 +285,5 @@ void Map::UploadFromFile()
     path += "/records";
     if(!boost::filesystem::exists(path))
         throw std::runtime_error("UploadFromFile : can't file directory to load from");
-    std::string path_to_file;
-    size_t i = 0;
-    size_t j = 0;
-    //for (size_t i = 0; i < heightInCells; ++i)
-    //{
-        //for (size_t j = 0; j < widthInCells; ++j)
-        //{
-            path_to_file = path.string() + "/" + std::to_string(i) + "_" + std::to_string(j);
-            std::ifstream file(path_to_file);
-            std::string s;
-            std::string line;
-            while (std::getline(file, line))
-                s += line;
-            file.close();
-            Json object = Json::parse(s);
-
-        //}
-    //}
+    *this = Map(path.string());
 }

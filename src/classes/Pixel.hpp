@@ -5,6 +5,9 @@
 #include "Hexagon.hpp"
 #include "Food.hpp"
 #include "Map.hpp"
+#include </home/mariasolovyova/CLionProjects/Evolution/tools/json/single_include/nlohmann/json.hpp>
+
+using Json = nlohmann::json;
 
 class Pixel
         : public Hexagon
@@ -13,18 +16,19 @@ class Pixel
 public:
     Pixel();
     Pixel(const double, const double, const size_t, const size_t);
+    Pixel(const double, const double, const size_t, const size_t, Brain);
     Pixel(const sf::CircleShape hexagon1, const float xNew, const float yNew, const size_t CellStrNew,
           const size_t CellColNew, const double lifesNew, Brain brainNew);
     Pixel(const Pixel& hex);
     virtual ~Pixel() = default;
-    Pixel& operator=(const Pixel& hexagon1);
+    Pixel& operator=(const Pixel&);
     std::vector<Hexagon*> LookArond(Map&) const;
     void Update(Map&);
     void EatingFood(Hexagon*, Map&);
     void Move(Map&, Hexagon*);
     void Reproduction(Map&);
     Hexagon* ViewNearbyCells(Map&, const Type&);
-    void Die();
+    void SaveToFile(const std::string&) const;
 
     Brain GetBrain() const;
     void SetBrain(Brain&);
