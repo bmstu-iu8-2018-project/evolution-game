@@ -9,40 +9,21 @@ Hexagon::Hexagon(const Type& type1, double xNew, double yNew, size_t cellStrNew,
              cellStr(cellStrNew),
              cellCol(cellColNew),
              lifes(99)
-{
-   // brain = std::make_shared<Brain>(nullptr);
-    /*if (type1 == Type::FOOD)
-    {
-        hexagon.setFillColor(sf::Color(93, 161, 48)); // Green
-        medicine = rand() % 5;
-    }
-    else if (type1 == Type::POISON)
-    {
-        hexagon.setFillColor(sf::Color(207, 66, 52)); // Красный
-        medicine = rand() % 12;
-    }*/
-    /*else if (type1 == Type::SOIL)
-    {
-        hexagon.setFillColor(sf::Color(131, 77, 24)); // Коричневый
-        Medicine = 0;
-    }*/
-    /*else if (type1 == Type::WATER)
-    {
-        hexagon.setFillColor(sf::Color(66, 170, 255)); // Голубой
-        medicine = 0;
-    }
-    hexagon.setOutlineThickness(1);
-    hexagon.setOutlineColor(sf::Color::Black);*/
-}
+{}
 
-/*Hexagon::Hexagon(const Hexagon& hex)
-    :  type(hex.type),
-       x(hex.x),
-       y(hex.y),  //  Почему когда объявляю конструктор ничего не работает
-       cellStr(hex.cellStr),
-       cellCol(hex.cellCol),
-       lifes(hex.lifes)
-{}*/
+Hexagon::Hexagon(const Type& type1,const sf::CircleShape hexagon1, const float xNew, const float yNew, const size_t cellStrNew,
+                 const size_t cellColNew, const double lifesNew)
+        :    type(type1),
+             hexagon(hexagon1),
+             x(xNew),
+             y(yNew),
+             cellStr(cellStrNew),
+             cellCol(cellColNew),
+             lifes(lifesNew)
+{
+    hexagon.setOutlineThickness(1);
+    hexagon.setOutlineColor(sf::Color::Black);
+}
 
 Hexagon& Hexagon::operator=(const Hexagon& hex)
 {
@@ -59,57 +40,100 @@ Hexagon& Hexagon::operator=(const Hexagon& hex)
     }
     return *this;
 }
-void Hexagon::Swap(Hexagon& hex)
-{
-    if (this != &hex)
-    {
-        std::swap(hexagon, hex.hexagon);
-        std::swap(type, hex.type);
-        std::swap(x, hex.x);
-        std::swap(y, hex.y);
-        std::swap(lifes, hex.lifes);
-        std::swap(cellStr, hex.cellStr);
-        std::swap(cellCol, hex.cellCol);
-        std::swap(medicine, hex.medicine);
-        std::swap(brain, hex.brain);
-    }
-}
 
-double& Hexagon::GetX()
+double Hexagon::GetX() const
 {
     return x;
 }
 
-double& Hexagon::GetY()
+double Hexagon::GetY() const
 {
     return y;
 }
 
-sf::CircleShape& Hexagon::GetHex()
+sf::CircleShape Hexagon::GetHex() const
 {
     return hexagon;
 }
 
-size_t& Hexagon::GetCellStr()
+size_t Hexagon::GetCellStr() const
 {
     return cellStr;
 }
 
-size_t&  Hexagon::GetCellCol()
+size_t  Hexagon::GetCellCol() const
 {
     return cellCol;
 }
 
-Hexagon::Type& Hexagon::GetType()
+Hexagon::Type Hexagon::GetType() const
 {
     return type;
 }
 
-double& Hexagon::GetLifes()
+double Hexagon::GetLifes() const
 {
     return lifes;
 }
-double& Hexagon::GetMedicine()
+
+double Hexagon::GetMedicine() const
 {
     return medicine;
+}
+
+void Hexagon::SetX(double newX)
+{
+    x = newX;
+}
+
+void Hexagon::SetY(double newY)
+{
+    y = newY;
+}
+
+sf::CircleShape& Hexagon::SetHex()
+{
+    return hexagon;
+}
+
+void Hexagon::SetCellStr(size_t newCellStr)
+{
+    cellStr = newCellStr;
+}
+
+void  Hexagon::SetCellCol(size_t newCellCol)
+{
+    cellCol = newCellCol;
+}
+
+Hexagon::Type& Hexagon::SetType()
+{
+    return type;
+}
+
+double& Hexagon::SetLifes()
+{
+    return lifes;
+}
+
+double& Hexagon::SetMedicine()
+{
+    return medicine;
+}
+
+bool Hexagon::IsAlive()
+{
+    return lifes > 0;
+}
+
+void Hexagon::SaveToFile(const std::string& path_to_file) const
+{
+    std::fstream fl(path_to_file, std::ios::app);
+    fl << "    " << "\"x\"" << " : " << x << "," << std::endl;
+    fl << "    " << "\"y\"" << " : " << y << "," << std::endl;
+    fl << "    " << "\"type\"" << " : " << type << "," << std::endl;
+    fl << "    " << "\"medicine\"" << " : " << medicine << "," << std::endl;
+    fl << "    " << "\"isHealfy\"" << " : " << isHealfy << "," << std::endl;
+    fl.close();
+    //  brain.SaveNetworkState(path_to_file);
 }
