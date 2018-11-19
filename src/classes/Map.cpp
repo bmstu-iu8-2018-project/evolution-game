@@ -232,11 +232,13 @@ void Map::Swap(Hexagon* hex1, Hexagon* hex2)
 
     //  std::swap(hex1, hex2);
     Hexagon* hex = hex1;
-    map[hex1->GetCellStr()].erase(hex1->GetCellCol());
-    map[hex1->GetCellStr()].insert(hex, hex2->GetCellCol());
+    //map[hex1->GetCellStr()].erase(hex1->GetCellCol());
+    map[hex1->GetCellStr()].insert(map[hex2->GetCellStr()][hex2->GetCellCol()], hex1->GetCellCol());
     //hex = hex2;
-    map[hex2->GetCellStr()].erase(hex2->GetCellCol());
-    map[hex1->GetCellStr()].insert(hex, hex1->GetCellCol());
+    //map[hex2->GetCellStr()].erase(hex2->GetCellCol());
+    //map[hex2->GetCellStr()].insert(map[hex1->GetCellStr()][hex1->GetCellCol() + 1], hex2->GetCellCol());
+    map[hex1->GetCellStr()].erase(hex1->GetCellCol());
+   // map[hex2->GetCellStr()].erase(hex2->GetCellCol());
     //organisms.push_back(map[xInCells][yInCells]);
     double copy = hex1->GetX();
     hex1->SetX(hex2->GetX());
