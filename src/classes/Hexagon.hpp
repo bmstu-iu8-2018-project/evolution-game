@@ -8,8 +8,8 @@
 #include <set>
 #include <atomic>
 #include <SFML/Graphics/CircleShape.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
 #include "Brain.hpp"
-#include <boost/any.hpp>
 
 class Map;
 
@@ -33,7 +33,7 @@ public:
     Hexagon(const Type& type1, double xNew, double yNew, size_t CellStrNew, size_t CellColNew);
     Hexagon(const Type& type, const sf::CircleShape hexagon1, const float xNew, const float yNew, const size_t CellStrNew,
                  const size_t CellColNew, const double lifesNew);
-    Hexagon& operator=(const Hexagon&);
+    Hexagon& operator=(const Hexagon*);
 
     virtual void Update(Map& map)
     {}
@@ -46,7 +46,6 @@ public:
     Type GetType() const;
     double GetLifes() const;
     double GetMedicine() const;
-    Brain GetBrain() const;
 
     void SetX(double);
     void SetY(double);
@@ -56,6 +55,8 @@ public:
     Type& SetType();
     double& SetLifes();
     double& SetMedicine();
+
+    virtual void Print(sf::RenderWindow*);
 
     bool IsAlive();
 

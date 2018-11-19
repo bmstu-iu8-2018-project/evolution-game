@@ -25,18 +25,18 @@ Hexagon::Hexagon(const Type& type1,const sf::CircleShape hexagon1, const float x
     hexagon.setOutlineColor(sf::Color::Black);
 }
 
-Hexagon& Hexagon::operator=(const Hexagon& hex)
+Hexagon& Hexagon::operator=(const Hexagon* hex)
 {
-    if (&hex != this)
+    if (hex != this)
     {
-        hexagon = hex.hexagon;
-        x = hex.x;
-        y = hex.y;
-        cellStr = hex.cellStr;
-        cellCol = hex.cellCol;
-        type = hex.type;
-        lifes = hex.lifes;
-        medicine = hex.medicine;
+        hexagon = hex->hexagon;
+        x = hex->x;
+        y = hex->y;
+        cellStr = hex->cellStr;
+        cellCol = hex->cellCol;
+        type = hex->type;
+        lifes = hex->lifes;
+        medicine = hex->medicine;
     }
     return *this;
 }
@@ -125,6 +125,9 @@ bool Hexagon::IsAlive()
 {
     return lifes > 0;
 }
+
+void Hexagon::Print(sf::RenderWindow* window)
+{}
 
 void Hexagon::SaveToFile(const std::string& path_to_file) const
 {

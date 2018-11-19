@@ -45,7 +45,7 @@ void Map::MultiplyPixels(int numberOfPixels)
                 Pixel* hex = new Pixel(map[xInCells][yInCells]->GetX(), map[xInCells][yInCells]->GetY(), (size_t) xInCells, (size_t) yInCells);
                 map[xInCells].erase(yInCells);
                 map[xInCells].insert(hex, yInCells);
-                organisms.push_back(map[xInCells][yInCells]);
+                organisms.push_back(hex);
                 flag = true;
             }
         }
@@ -64,7 +64,7 @@ void Map::CreateFood(int numberOfFood)
             int yInCells = intrand(0, widthInCells - 1);
             if (map[xInCells][yInCells]->GetType() == Hexagon::Type::WATER)
             {
-                Food* hex = new Food(map[xInCells][yInCells]->GetX(), map[xInCells][yInCells]->GetY(), (size_t) xInCells, (size_t) yInCells);
+                Food* hex = new Food(map[xInCells][yInCells]->GetX(), map[xInCells][yInCells]->GetY(), (size_t)xInCells, (size_t)yInCells);
                 map[xInCells].erase(yInCells);
                 map[xInCells].insert(hex, yInCells);
                 flag = true;
@@ -226,12 +226,16 @@ void Map::SetOrganism(Hexagon* org)
 
 void Map::Swap(Hexagon* hex1, Hexagon* hex2)
 {
+    //  std::swap(map[hex1->GetCellStr()][hex1->GetCellCol()], map[hex2->GetCellStr()][hex2->GetCellCol()]);
+    //  Hexagon* copy = hex1;
+    //map[hex1->GetCellStr()][hex1->GetCellCol()];
+
     //  std::swap(hex1, hex2);
-    Hexagon* hex =  hex1;
+    Hexagon* hex = hex1;
     map[hex1->GetCellStr()].erase(hex1->GetCellCol());
-    map[hex2->GetCellStr()].insert(hex, hex2->GetCellCol());
-    hex =  hex2;
-    map[hex2->GetCellStr()].erase(hex2->GetCellCol() + 1);
+    map[hex1->GetCellStr()].insert(hex, hex2->GetCellCol());
+    //hex = hex2;
+    map[hex2->GetCellStr()].erase(hex2->GetCellCol());
     map[hex1->GetCellStr()].insert(hex, hex1->GetCellCol());
     //organisms.push_back(map[xInCells][yInCells]);
     double copy = hex1->GetX();
@@ -247,12 +251,12 @@ void Map::Swap(Hexagon* hex1, Hexagon* hex2)
     hex1->SetCellCol(hex2->GetCellCol());
     hex2->SetCellCol(cp);
 
-    /*if (hex2.GetType() == Hexagon::WATER)
+   /* if (hex2->GetType() == Hexagon::WATER)
     {
-        Water tmp1(hex2.GetX(), hex2.GetY(), hex2.GetCellStr(), hex2.GetCellCol());
-        Pixel tmp2(hex1.GetX(), hex1.GetY(), hex1.GetCellStr(), hex1.GetCellCol());
-        hex2 = tmp2;
-        hex1 = tmp1;
+        Water tmp1(hex2->GetX(), hex2->GetY(), hex2->GetCellStr(), hex2->GetCellCol());
+        Pixel tmp2(hex1->GetX(), hex1->GetY(), hex1->GetCellStr(), hex1->GetCellCol());
+        hex2 = &tmp2;
+        hex1 = &tmp1;
     }*/
 }
 
@@ -261,13 +265,13 @@ void Map::SaveToFile() const
     boost::filesystem::path path = boost::filesystem::current_path().parent_path();
     path += "/records";
     if(!boost::filesystem::exists(path))
-        boost::filesystem::create_directory(path);  //  добавить дату в название папки, загрузать всегда последнюю
+        boost::filesystem::create_directory(path);  //  добавить дату в название папки, загружать всегда последнюю
     std::string path_to_file;
     size_t i = 0;
     size_t j = 0;
-    for (size_t i = 0; i < heightInCells; ++i)
+    //for (size_t i = 0; i < heightInCells; ++i)
     {
-        for (size_t j = 0; j < widthInCells; ++j)
+        //for (size_t j = 0; j < widthInCells; ++j)
         {
             path_to_file = path.string() + "/" + std::to_string(i) + "_" + std::to_string(j);
             std::fstream file(path_to_file, std::ios::app);
@@ -279,11 +283,11 @@ void Map::SaveToFile() const
     }
 }
 
-void Map::UploadFromFile()
+/*void Map::UploadFromFile()
 {
     boost::filesystem::path path = boost::filesystem::current_path().parent_path();
     path += "/records";
     if(!boost::filesystem::exists(path))
         throw std::runtime_error("UploadFromFile : can't file directory to load from");
     *this = Map(path.string());
-}
+}*/

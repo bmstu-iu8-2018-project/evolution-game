@@ -32,7 +32,7 @@ void Evolution::run()
                 }
                 else if (keyboard.isPressed(sf::Keyboard::U))
                 {
-                    map.UploadFromFile();
+                   // map.UploadFromFile();
                     window.close();
                 }
                 window.clear();
@@ -41,33 +41,36 @@ void Evolution::run()
             {
                 for (size_t j = 0; j < map.GetWidthInCells(); ++j)
                 {
-                    map[i][j]->SetHex().setPosition((float) map[i][j]->GetX(), (float) map[i][j]->GetY());
-                    window.draw(map[i][j]->GetHex());
+                    map[i][j]->Print(&window);
+                    if (map[i][j]->GetHex().getFillColor() == sf::Color::Black)
+                        throw std::runtime_error("not hex");
+
                 }
             }
             map.Update();
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
             window.display();
         }
-        /*std::vector<Hexagon*> organisms = map.GetOrganisms();
+/*        std::vector<Pixel*> organisms = map.GetOrganisms();
+        std::vector<Hexagon*> newOrganisms = map.GetOrganisms();
         size_t size = organisms.size();
-        for (size_t i = 0; i < size; ++i)
-        {
-                for (int j = 0; j < 5; ++j)
-                {
-                    organisms.push_back(organisms[i]);
-                }
-        }
         for (size_t i = 0; i < size; ++i)
         {
             for (int j = 0; j < 5; ++j)
             {
-                Brain brain = organismsNew[i]->GetBrain();
-                brain.Train();
-                organismsNew[i]->SetBrain(brain);
-                organisms.push_back(organismsNew[i]);
+                newOrganisms[i]->GetBrain().Train();
+                newOrganisms[i]->SetBrain(brain);
+                organisms.push_back(newOrganisms[i]);
+            }
+        }
+
+
+        for (size_t i = 0; i < size; ++i)
+        {
+            for (int j = 0; j < 5; ++j)
+            {
+                organisms.push_back(organisms[i]);
             }
         }*/
-        //std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
 }

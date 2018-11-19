@@ -20,7 +20,7 @@ public:
     Pixel(const sf::CircleShape hexagon1, const float xNew, const float yNew, const size_t CellStrNew,
           const size_t CellColNew, const double lifesNew, Brain brainNew);
     Pixel(const Pixel& hex);
-    virtual ~Pixel() = default;
+     ~Pixel() = default;
     Pixel& operator=(const Pixel&);
     std::vector<Hexagon*> LookArond(Map&) const;
     void Update(Map&);
@@ -32,6 +32,7 @@ public:
 
     Brain GetBrain() const;
     void SetBrain(Brain&);
+    void Print(sf::RenderWindow*) override;
 };
 
 #endif //EVOLUTION_PIXEL_HPP

@@ -5,10 +5,10 @@ Pixel::Pixel()
     brain = Brain();
 }
 
-void Pixel::SetBrain(Brain& brain1)
+/*void Pixel::SetBrain(Brain& brain1)
 {
     brain = brain1;
-}
+}*/
 
 Pixel::Pixel(const double xNew, const double yNew, const size_t CellStrNew, const size_t CellColNew)
         :    Hexagon(Type::PIXEL, xNew, yNew, CellStrNew, CellColNew)
@@ -49,7 +49,7 @@ Pixel::Pixel(const Pixel& hex)
     medicine = hex.medicine;
 }
 
-Pixel& Pixel::operator=(const Pixel& hex)
+/*Pixel& Pixel::operator=(const Pixel& hex)
 {
     if (&hex != this)
     {
@@ -64,65 +64,65 @@ Pixel& Pixel::operator=(const Pixel& hex)
     }
     return *this;
 }
-
+*/
 std::vector<Hexagon*> Pixel::LookArond(Map& map) const
 {
     std::vector<Hexagon*> dir;
     if (cellStr % 2 == 0)
     {
         if (cellStr < map.GetHeightInCells() - 1  && cellCol > 0)
-            dir.push_back((map[cellStr + 1][cellCol - 1]));
+            dir.push_back(map[cellStr + 1][cellCol - 1]);
         else
             dir.push_back(nullptr);
         if (cellCol > 0)
-            dir.push_back((map[cellStr][cellCol - 1]));
+            dir.push_back(map[cellStr][cellCol - 1]);
         else
             dir.push_back(nullptr);
 
         if (cellStr > 0 && cellCol > 0)
-            dir.push_back((map[cellStr - 1][cellCol - 1]));
+            dir.push_back(map[cellStr - 1][cellCol - 1]);
         else
             dir.push_back(nullptr);
 
         if (cellStr > 0)
-            dir.push_back((map[cellStr - 1][cellCol]));
+            dir.push_back(map[cellStr - 1][cellCol]);
         else
             dir.push_back(nullptr);
 
         if (cellCol < map.GetWidthInCells() - 1)
-            dir.push_back((map[cellStr][cellCol + 1]));
+            dir.push_back(map[cellStr][cellCol + 1]);
         else
             dir.push_back(nullptr);
         if (cellStr % 2 == 0 && cellStr < map.GetHeightInCells() - 1)
-            dir.push_back((map[cellStr + 1][cellCol]));
+            dir.push_back(map[cellStr + 1][cellCol]);
         else
             dir.push_back(nullptr);
     }
     else
     {
         if (cellStr < map.GetHeightInCells() - 1)
-            dir.push_back((map[cellStr + 1][cellCol]));
+            dir.push_back(map[cellStr + 1][cellCol]);
         else
             dir.push_back(nullptr);
         if (cellCol > 0)
-            dir.push_back((map[cellStr][cellCol - 1]));
+            dir.push_back(map[cellStr][cellCol - 1]);
         else
             dir.push_back(nullptr);
         if (cellStr % 2 == 1 && cellStr > 0)
-            dir.push_back((map[cellStr - 1][cellCol]));
+            dir.push_back(map[cellStr - 1][cellCol]);
         else
             dir.push_back(nullptr);
 
         if (cellStr % 2 == 1 && cellStr > 0 && cellCol > 0 )
-            dir.push_back((map[cellStr - 1][cellCol + 1]));
+            dir.push_back(map[cellStr - 1][cellCol + 1]);
         else
             dir.push_back(nullptr);
         if (cellCol < map.GetHeight() - 1)
-            dir.push_back((map[cellStr][cellCol + 1]));
+            dir.push_back(map[cellStr][cellCol + 1]);
         else
             dir.push_back(nullptr);
         if (cellStr % 2 == 1 && cellStr < map.GetHeightInCells() - 1 && cellCol < map.GetWidthInCells() - 1)
-            dir.push_back((map[cellStr + 1][cellCol + 1]));
+            dir.push_back(map[cellStr + 1][cellCol + 1]);
         else
             dir.push_back(nullptr);
     }
@@ -163,11 +163,11 @@ void Pixel::Move(Map& map, Hexagon* hexagon1)
             EatingFood(hexagon1, map);
             return;
         }
-        else if (lifes > 90)
+        /*else if (lifes > 90)
         {
             Reproduction(map);
             return;
-        }
+        }*/
         map.Swap(this, hexagon1);
     }
 }
@@ -250,4 +250,14 @@ void Pixel::SaveToFile(const std::string& path_to_file) const
     fl << "    " << "\"isHealfy\"" << " : " << isHealfy << "," << std::endl;
     fl.close();
     brain.SaveNetworkState(path_to_file);
+}
+
+void Pixel::Print(sf::RenderWindow* window)
+{
+    sf::CircleShape hexagon1(10, 6);
+    hexagon1.setFillColor(sf::Color::Yellow);
+    hexagon1.setOutlineThickness(1);
+    hexagon1.setOutlineColor(sf::Color::Black);
+    hexagon1.setPosition(x, y);
+    window->draw(hexagon1);
 }

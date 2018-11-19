@@ -18,7 +18,7 @@ class Row
 public:
     Row() = default;
     ~Row() = default;
-    Hexagon* operator[](size_t index)
+    Hexagon*& operator[](size_t index)
     {
         return row[index];
     }

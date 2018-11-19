@@ -18,9 +18,21 @@ public:
         hexagon.setOutlineColor(sf::Color::Black);
         medicine = Medicine;
     }
+
     void Update(Map&) override
     {}
+
     ~Food() = default;
+
+    void Print(sf::RenderWindow* window) override
+    {
+        sf::CircleShape hexagon1(10, 6);
+        hexagon1.setFillColor(sf::Color(93, 161, 48));
+        hexagon1.setOutlineThickness(1);
+        hexagon1.setOutlineColor(sf::Color::Black);
+        hexagon1.setPosition(x, y);
+        window->draw(hexagon1);
+    }
 };
 
 class Water
@@ -38,6 +50,16 @@ public:
     void Update(Map& map) override
     {}
     ~Water() = default;
+
+    void Print(sf::RenderWindow* window) override
+    {
+        sf::CircleShape hexagon1(10, 6);
+        hexagon1.setFillColor(sf::Color(66, 170, 255));
+        hexagon1.setOutlineThickness(1);
+        hexagon1.setOutlineColor(sf::Color::Black);
+        hexagon1.setPosition(x, y);
+        window->draw(hexagon1);
+    }
 };
 
 class Poison
@@ -55,6 +77,16 @@ public:
     void Update(Map& map) override
     {}
     ~Poison() = default;
+
+    void Print(sf::RenderWindow* window) override
+    {
+        sf::CircleShape hexagon1(10, 6);
+        hexagon1.setFillColor(sf::Color(207, 66, 52));
+        hexagon1.setOutlineThickness(1);
+        hexagon1.setOutlineColor(sf::Color::Black);
+        hexagon1.setPosition(x, y);
+        window->draw(hexagon1);
+    }
 };
 
 #endif //EVOLUTION_FOOD_HPP
