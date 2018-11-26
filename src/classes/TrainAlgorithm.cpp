@@ -33,6 +33,7 @@ void TrainAlgorithm::WeightsInitialization()
     CommonInitialization();
 
 }
+
 void TrainAlgorithm::WeightsInitialization(const Json& object)
 {
     for (size_t innerOfLayers = 0; innerOfLayers < brain->Size(); innerOfLayers++)
@@ -43,7 +44,7 @@ void TrainAlgorithm::WeightsInitialization(const Json& object)
             for (size_t innerOfLinks = 0; innerOfLinks < currentNeuron->GetNumOfLinks(); innerOfLinks++)
             {
                 Link* currentLink = currentNeuron->at(innerOfLinks);
-                double weight = object[innerOfLayers][innerOfNeurons][innerOfLinks];
+                double weight = object["brain"]["layers"][innerOfLayers][innerOfNeurons][innerOfLinks];
                 currentLink->SetWeight(weight);
             }
         }
@@ -55,10 +56,9 @@ TrainAlgorithm::TrainAlgorithm(Brain* newBrain)
     brain = newBrain;
 }
 
-void TrainAlgorithm::Train()
+void TrainAlgorithm::Train(Brain* brain1)
 {
-    if (this == nullptr)
-        return;
+    brain = brain1;
     for (size_t innerOfLayers = 0; innerOfLayers < brain->Size(); innerOfLayers++)
     {
         for (size_t innerOfNeurons = 0; innerOfNeurons < brain->GetLayer(innerOfLayers).size(); innerOfNeurons++)

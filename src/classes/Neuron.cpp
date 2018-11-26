@@ -125,7 +125,7 @@ void Neuron::SetInputLink(Link* newLLink)
 void Neuron::SaveNeuronState(const std::string& path_to_file) const
 {
     std::fstream fl(path_to_file, std::ios::app);
-    fl << "                [";
+    fl << "\t\t\t\t\t\t\t[";
     for (size_t iNumOfOutLinks = 0; iNumOfOutLinks < linksToNeurons.size(); iNumOfOutLinks++)
     {
         fl << linksToNeurons.at(iNumOfOutLinks)->GetWeight() ;

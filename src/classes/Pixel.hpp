@@ -1,5 +1,5 @@
-#ifndef EVOLUTION_PIXEL_HPP
-#define EVOLUTION_PIXEL_HPP
+#ifndef PIXEL_HPP
+#define PIXEL_HPP
 
 #include <algorithm>
 #include "Hexagon.hpp"
@@ -13,11 +13,12 @@ class Pixel
         : public Hexagon
 {
     Brain brain;
+    unsigned int numberOfLifeIterations;
 public:
     Pixel();
     Pixel(const double, const double, const size_t, const size_t);
     Pixel(const double, const double, const size_t, const size_t, Brain);
-    Pixel(const sf::CircleShape hexagon1, const float xNew, const float yNew, const size_t CellStrNew,
+    Pixel(const float xNew, const float yNew, const size_t CellStrNew,
           const size_t CellColNew, const double lifesNew, Brain brainNew);
     Pixel(const Pixel& hex);
      ~Pixel() = default;
@@ -30,9 +31,11 @@ public:
     Hexagon* ViewNearbyCells(Map&, const Type&);
     void SaveToFile(const std::string&) const;
 
-    Brain GetBrain() const;
-    void SetBrain(Brain&);
-    void Print(sf::RenderWindow*) override;
+    Brain GetBrain() const override;
+    unsigned int GetNumberOfLifeIterations() const;
+    void SetBrain(const Brain&) override;
+    void ResetNumberOfLifeIterations() override;
+    void Print(sf::RenderWindow*) const override;
 };
 
-#endif //EVOLUTION_PIXEL_HPP
+#endif

@@ -13,10 +13,14 @@ class Evolution
     Map map;
     sf::RenderWindow window;                   // std::shared_ptr<sf::RenderWindow> window; // может так?
     Keyboard keyboard;
-    const unsigned int iteraition = 100;
+    unsigned int evolutionNumber;
+    std::vector<std::thread> threads;
 public:
     Evolution();
+    Evolution(const Evolution&);
+    Evolution(Evolution&&);
     void run();
+    void CatchingEvents();
 };
 
 #endif

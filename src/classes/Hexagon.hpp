@@ -23,15 +23,14 @@ public:
         WATER,
         POISON,
         PIXEL
-        //  SOIL
     };
 public:
     Hexagon() = default;
 
-    ~Hexagon() = default;
+    virtual ~Hexagon() = default;
 
     Hexagon(const Type& type1, double xNew, double yNew, size_t CellStrNew, size_t CellColNew);
-    Hexagon(const Type& type, const sf::CircleShape hexagon1, const float xNew, const float yNew, const size_t CellStrNew,
+    Hexagon(const Type& type, const float xNew, const float yNew, const size_t CellStrNew,
                  const size_t CellColNew, const double lifesNew);
     Hexagon& operator=(const Hexagon*);
 
@@ -40,29 +39,31 @@ public:
 
     double GetX() const;
     double GetY() const;
-    sf::CircleShape GetHex() const;
     size_t GetCellStr() const;
     size_t  GetCellCol() const;
     Type GetType() const;
     double GetLifes() const;
     double GetMedicine() const;
+    virtual Brain GetBrain() const;
+    virtual unsigned int GetNumberOfLifeIterations() const;
 
+    virtual void SetBrain(const Brain&);
     void SetX(double);
     void SetY(double);
-    sf::CircleShape& SetHex();
     void SetCellStr(size_t);
     void SetCellCol(size_t);
-    Type& SetType();
-    double& SetLifes();
-    double& SetMedicine();
+    void SetType(Type&);
+    void SetLifes(double);
+    void SetMedicine(double);
+    virtual void ResetNumberOfLifeIterations();
+    void ResetMedicine();
 
-    virtual void Print(sf::RenderWindow*);
+    virtual void Print(sf::RenderWindow*) const;
 
     bool IsAlive();
 
     virtual void SaveToFile(const std::string&) const;
 protected:
-    sf::CircleShape hexagon = sf::CircleShape(10, 6); // сам шестиугольник
     double x;  // координата по х как номер ячейки
     double y;  // координата по у как номер ячейки
     size_t cellStr;

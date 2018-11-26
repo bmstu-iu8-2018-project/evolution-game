@@ -14,7 +14,7 @@ public:
     TrainAlgorithm() = default;
     ~TrainAlgorithm() = default;
     explicit TrainAlgorithm(Brain*);
-	void Train();
+	void Train(Brain*);
 	void WeightsInitialization();
     void WeightsInitialization(const Json&);
 private:

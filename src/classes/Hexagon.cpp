@@ -11,25 +11,20 @@ Hexagon::Hexagon(const Type& type1, double xNew, double yNew, size_t cellStrNew,
              lifes(99)
 {}
 
-Hexagon::Hexagon(const Type& type1,const sf::CircleShape hexagon1, const float xNew, const float yNew, const size_t cellStrNew,
+Hexagon::Hexagon(const Type& type1, const float xNew, const float yNew, const size_t cellStrNew,
                  const size_t cellColNew, const double lifesNew)
         :    type(type1),
-             hexagon(hexagon1),
              x(xNew),
              y(yNew),
              cellStr(cellStrNew),
              cellCol(cellColNew),
              lifes(lifesNew)
-{
-    hexagon.setOutlineThickness(1);
-    hexagon.setOutlineColor(sf::Color::Black);
-}
+{}
 
 Hexagon& Hexagon::operator=(const Hexagon* hex)
 {
     if (hex != this)
     {
-        hexagon = hex->hexagon;
         x = hex->x;
         y = hex->y;
         cellStr = hex->cellStr;
@@ -49,11 +44,6 @@ double Hexagon::GetX() const
 double Hexagon::GetY() const
 {
     return y;
-}
-
-sf::CircleShape Hexagon::GetHex() const
-{
-    return hexagon;
 }
 
 size_t Hexagon::GetCellStr() const
@@ -81,6 +71,15 @@ double Hexagon::GetMedicine() const
     return medicine;
 }
 
+Brain Hexagon::GetBrain() const
+{}
+
+unsigned int Hexagon::GetNumberOfLifeIterations() const
+{}
+
+void Hexagon::ResetNumberOfLifeIterations()
+{}
+
 void Hexagon::SetX(double newX)
 {
     x = newX;
@@ -89,11 +88,6 @@ void Hexagon::SetX(double newX)
 void Hexagon::SetY(double newY)
 {
     y = newY;
-}
-
-sf::CircleShape& Hexagon::SetHex()
-{
-    return hexagon;
 }
 
 void Hexagon::SetCellStr(size_t newCellStr)
@@ -106,19 +100,27 @@ void  Hexagon::SetCellCol(size_t newCellCol)
     cellCol = newCellCol;
 }
 
-Hexagon::Type& Hexagon::SetType()
+void Hexagon::SetBrain(const Brain&)
+{}
+
+void Hexagon::SetType(Type& typeNew)
 {
-    return type;
+    type = typeNew;
 }
 
-double& Hexagon::SetLifes()
+void Hexagon::SetLifes(double newLifes)
 {
-    return lifes;
+    lifes = newLifes;
 }
 
-double& Hexagon::SetMedicine()
+void Hexagon::SetMedicine(double newMedicine)
 {
-    return medicine;
+    medicine = newMedicine;
+}
+
+void Hexagon::ResetMedicine()
+{
+    medicine = 0;
 }
 
 bool Hexagon::IsAlive()
@@ -126,17 +128,18 @@ bool Hexagon::IsAlive()
     return lifes > 0;
 }
 
-void Hexagon::Print(sf::RenderWindow* window)
+void Hexagon::Print(sf::RenderWindow*) const
 {}
 
 void Hexagon::SaveToFile(const std::string& path_to_file) const
 {
     std::fstream fl(path_to_file, std::ios::app);
-    fl << "    " << "\"x\"" << " : " << x << "," << std::endl;
-    fl << "    " << "\"y\"" << " : " << y << "," << std::endl;
-    fl << "    " << "\"type\"" << " : " << type << "," << std::endl;
-    fl << "    " << "\"medicine\"" << " : " << medicine << "," << std::endl;
-    fl << "    " << "\"isHealfy\"" << " : " << isHealfy << "," << std::endl;
+    fl << "\t\t\t\t" << "\"cellStr\"" << " : " << cellStr << "," << std::endl;
+    fl << "\t\t\t\t" << "\"cellCol\"" << " : " << cellCol << "," << std::endl;
+    fl << "\t\t\t\t" << "\"x\"" << " : " << x << "," << std::endl;
+    fl << "\t\t\t\t" << "\"y\"" << " : " << y << "," << std::endl;
+    fl << "\t\t\t\t" << "\"type\"" << " : " << type << "," << std::endl;
+    fl << "\t\t\t\t" << "\"medicine\"" << " : " << medicine << "," << std::endl;
+    fl << "\t\t\t\t" << "\"isHealfy\"" << " : " << isHealfy << std::endl;
     fl.close();
-    //  brain.SaveNetworkState(path_to_file);
 }
