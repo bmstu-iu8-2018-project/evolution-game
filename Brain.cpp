@@ -49,9 +49,10 @@ Brain::Brain(const size_t& inInputs, const size_t& inOutputs, const size_t& inNu
 
 Brain::Brain(const Json& object)
 {
-    inputs = static_cast<size_t>(object["inputs"]);
-    outputs = static_cast<size_t>(object["outputs"]);
-    hidden = static_cast<size_t>(object["hidden"]);
+    Json newObject = object["brain"]["layers"];
+    inputs = static_cast<size_t>(object["brain"]["inputs"]);
+    outputs = static_cast<size_t>(object["brain"]["outputs"]);
+    hidden = static_cast<size_t>(object["brain"]["hidden"]);
     if(inputs > 0 || outputs > 0)
     {
         NetworkFunction* InputNeuronsFunc = new Sigmoid;
@@ -60,13 +61,12 @@ Brain::Brain(const Json& object)
         std::vector<Neuron*> inputLayer;
         std::vector<Neuron*> outputLayer;
         neuronCreator = new PerceptronNeuronCreator;
-        algorithm = new TrainAlgorithm(this);
 
         for (size_t inner = 0; inner < outputs; inner++)
             outputLayer.push_back(neuronCreator->CreateOutputNeuron(OutputNeuronsFunc));
         layers.push_back(outputLayer);
 
-        for (size_t inner = 0; inner < hidden; inner++)
+        for (size_t inner = 0; inner < 2; inner++)
         {
             std::vector<Neuron*> HiddenLayer;
             for (size_t j = 0; j < hidden; j++)
@@ -82,12 +82,26 @@ Brain::Brain(const Json& object)
             inputLayer.push_back(neuronCreator->CreateInputNeuron(layers[0], InputNeuronsFunc));
         }
         layers.insert(layers.begin(),inputLayer);
+        algorithm = new TrainAlgorithm(this);
         algorithm->WeightsInitialization(object);
     }
     else
     {
         throw std::logic_error("Error in Brain constructor:"
                                "The number of input and output neurons has to be more than 0");
+    }
+}
+
+Brain& Brain::operator=(const Brain& newBrain)
+{
+    if (this != &newBrain)
+    {
+        neuronCreator = newBrain.neuronCreator;
+        algorithm = newBrain.algorithm;
+        layers = newBrain.layers;
+        inputs = newBrain.inputs;
+        outputs = newBrain.outputs;
+        hidden = newBrain.hidden;
     }
 }
 
@@ -115,9 +129,9 @@ size_t Brain::GetInputs() const
     return inputs;
 }
 
-void Brain::Train() const
+void Brain::Train()
 {
-    algorithm->Train();
+    algorithm->Train(this);
 }
 
 //  Функция принимает на вход вектор указателей на объекты, окружающиx пикселя
@@ -224,14 +238,15 @@ void Brain::ResetWeights() const
 void Brain::SaveNetworkState(const std::string& path_to_file) const
 {
     std::fstream fl(path_to_file, std::ios::app);
-	fl << "    " << "\"Brain\" : " << std::endl << "    {" << std::endl;
-	fl << "        " << "\"inputs\" : " << inputs << "," << std::endl;
-    fl << "        " << "\"outputs\" : " << outputs << "," << std::endl;
-    fl << "        " << "\"hidden\" : " << hidden << "," << std::endl;
-    fl << "        " << "\"layers\" : [" << std::endl;
+	fl << "\t\t\t\t" << "\"brain\" : " << std::endl << "\t\t\t\t{" << std::endl;
+	fl << "\t\t\t\t\t" << "\"inputs\" : " << inputs << "," << std::endl;
+    fl << "\t\t\t\t\t" << "\"outputs\" : " << outputs << "," << std::endl;
+    fl << "\t\t\t\t\t" << "\"hidden\" : " << hidden << "," << std::endl;
+    fl << "\t\t\t\t\t" << "\"layers\" :" << std::endl;
+    fl << "\t\t\t\t\t[" << std::endl;
     for (size_t indOfLayer = 0; indOfLayer < layers.size(); indOfLayer++)
 	{
-		fl << "             [" << std::endl;
+		fl << "\t\t\t\t\t\t[" << std::endl;
 		for (size_t indOfNeuron = 0; indOfNeuron < layers[indOfLayer].size(); indOfNeuron++)
 		{
 			layers[indOfLayer].at(indOfNeuron)->SaveNeuronState(path_to_file);
@@ -239,11 +254,11 @@ void Brain::SaveNetworkState(const std::string& path_to_file) const
 			    fl << "," << std::endl;
 		}
 		fl << std::endl;
-		fl << "             ]";
+		fl << "\t\t\t\t\t\t]";
 		if (layers.size() - 1 != indOfLayer)
 		    fl << "," << std::endl;
 	}
-    fl << std::endl << "         " << "]" << std::endl;
-	fl << "    }" << std::endl;
+    fl << std::endl << "\t\t\t\t\t" << "]" << std::endl;
+	fl << "\t\t\t\t}" << std::endl;
 	fl.close();
 }

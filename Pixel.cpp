@@ -2,22 +2,14 @@
 
 Pixel::Pixel()
 {
+    numberOfLifeIterations = 1;
     brain = Brain();
 }
-
-/*void Pixel::SetBrain(Brain& brain1)
-{
-    brain = brain1;
-}*/
 
 Pixel::Pixel(const double xNew, const double yNew, const size_t CellStrNew, const size_t CellColNew)
         :    Hexagon(Type::PIXEL, xNew, yNew, CellStrNew, CellColNew)
 {
-    //delete brain;
-    //brain = new Brain(10, 7, 2 , 10);
-    hexagon.setFillColor(sf::Color::Yellow);
-    hexagon.setOutlineThickness(1);
-    hexagon.setOutlineColor(sf::Color::Black);
+    numberOfLifeIterations = 1;
     medicine = 0;
 }
 
@@ -25,44 +17,25 @@ Pixel::Pixel(const double xNew, const double yNew, const size_t CellStrNew, cons
         :    Hexagon(Type::PIXEL, xNew, yNew, CellStrNew, CellColNew),
              brain(newBrain)
 {
-    hexagon.setFillColor(sf::Color::Yellow);
-    hexagon.setOutlineThickness(1);
-    hexagon.setOutlineColor(sf::Color::Black);
+    numberOfLifeIterations = 1;
     medicine = 0;
 }
 
-Pixel::Pixel(const sf::CircleShape hexagon1, const float xNew, const float yNew, const size_t CellStrNew,
+Pixel::Pixel(const float xNew, const float yNew, const size_t CellStrNew,
              const size_t CellColNew, const double lifesNew, Brain brainNew)
         :    Hexagon(Type::PIXEL, xNew, yNew, CellStrNew, CellColNew)
 {
-    hexagon = hexagon1;
+    numberOfLifeIterations = 1;
     lifes = lifesNew;
     brain = brainNew;
-    hexagon.setOutlineThickness(1);
-    hexagon.setOutlineColor(sf::Color::Black);
 }
 
 Pixel::Pixel(const Pixel& hex)
         :  Hexagon(hex.type, hex.x, hex.y, hex.cellStr, hex.cellCol)
 {
+    numberOfLifeIterations = 1;
     lifes = hex.lifes;
     medicine = hex.medicine;
-}
-
-Pixel& Pixel::operator=(const Pixel& hex)
-{
-    if (&hex != this)
-    {
-        hexagon = hex.GetHex();
-        x = hex.GetX();
-        y = hex.GetY();
-        cellStr = hex.GetCellStr();
-        cellCol = hex.GetCellCol();
-        type = hex.GetType();
-        lifes = hex.GetLifes();
-        medicine = hex.GetMedicine();
-    }
-    return *this;
 }
 
 std::vector<Hexagon*> Pixel::LookArond(Map& map) const
@@ -134,10 +107,11 @@ void Pixel::Update(Map& map)
     std::vector<Hexagon*> vec = LookArond(map);
     Hexagon* moveTo = brain.GetSolution(vec);
     Move(map, moveTo);
+    ++numberOfLifeIterations;
     if (isHealfy)
         lifes -= 1;
     else
-        lifes -= medicine;
+        lifes -= 5;
 }
 
 void Pixel::EatingFood(Hexagon* hexagon1, Map& map)
@@ -163,11 +137,11 @@ void Pixel::Move(Map& map, Hexagon* hexagon1)
             EatingFood(hexagon1, map);
             return;
         }
-        else if (lifes > 90)
+        /*else if (lifes > 98)
         {
             Reproduction(map);
             return;
-        }
+        }*/
         map.Swap(this, hexagon1);
     }
 }
@@ -187,7 +161,7 @@ void Pixel::Reproduction(Map& map)
     if (dir != nullptr)
     {
         map[dir->GetCellStr()].erase(dir->GetCellCol());
-        map[dir->GetCellStr()].insert(new Pixel(hexagon, dir->GetX(), dir->GetY(), dir->GetCellStr(), dir->GetCellCol(), lifes,
+        map[dir->GetCellStr()].insert(new Pixel(dir->GetX(), dir->GetY(), dir->GetCellStr(), dir->GetCellCol(), lifes,
                                                 brain), dir->GetCellCol());
         map.SetOrganism(map[dir->GetCellStr()][dir->GetCellCol()]);
     }
@@ -235,12 +209,41 @@ Hexagon* Pixel::ViewNearbyCells(Map& map, const Type& tmp)
     }
 }
 
+unsigned int Pixel::GetNumberOfLifeIterations() const
+{
+    return numberOfLifeIterations;
+}
+
 Brain Pixel::GetBrain() const
 {
     return brain;
 }
 
+void Pixel::SetBrain(const Brain& brainNew)
+{
+    brain = brainNew;
+}
+
+void Pixel::ResetNumberOfLifeIterations()
+{
+    numberOfLifeIterations = 0;
+}
+
 void Pixel::SaveToFile(const std::string& path_to_file) const
+{
+    std::fstream fl(path_to_file, std::ios::app);
+    fl << "\t\t\t\t" << "\"cellStr\"" << " : " << cellStr << "," << std::endl;
+    fl << "\t\t\t\t" << "\"cellCol\"" << " : " << cellCol << "," << std::endl;
+    fl << "\t\t\t\t" << "\"x\"" << " : " << x << "," << std::endl;
+    fl << "\t\t\t\t" << "\"y\"" << " : " << y << "," << std::endl;
+    fl << "\t\t\t\t" << "\"type\"" << " : " << type << "," << std::endl;
+    fl << "\t\t\t\t" << "\"medicine\"" << " : " << medicine << "," << std::endl;
+    fl << "\t\t\t\t" << "\"isHealfy\"" << " : " << isHealfy << "," << std::endl;
+    fl.close();
+    brain.SaveNetworkState(path_to_file);
+}
+
+/*void Pixel::SaveToFile(const std::string& path_to_file) const
 {
     std::fstream fl(path_to_file, std::ios::app);
     fl << "    " << "\"x\"" << " : " << x << "," << std::endl;
@@ -250,14 +253,23 @@ void Pixel::SaveToFile(const std::string& path_to_file) const
     fl << "    " << "\"isHealfy\"" << " : " << isHealfy << "," << std::endl;
     fl.close();
     brain.SaveNetworkState(path_to_file);
-}
+}*/
 
-void Pixel::Print(sf::RenderWindow* window)
+void Pixel::Print(sf::RenderWindow* window) const
 {
     sf::CircleShape hexagon1(10, 6);
     hexagon1.setFillColor(sf::Color::Yellow);
     hexagon1.setOutlineThickness(1);
     hexagon1.setOutlineColor(sf::Color::Black);
-    hexagon1.setPosition(x, y);
+    hexagon1.setPosition((float)x, (float)y);
     window->draw(hexagon1);
+    sf::Font font;
+    font.loadFromFile("/home/anastasia/CLionProjects/evolution/include/Arial.ttf");
+    sf::Text text("", font, 13);
+    text.setColor(sf::Color::Black);
+    std::ostringstream hexagonLifesString;
+    hexagonLifesString << lifes;
+    text.setString(hexagonLifesString.str());
+    text.setPosition((float)x, (float)y);
+    window->draw(text);
 }

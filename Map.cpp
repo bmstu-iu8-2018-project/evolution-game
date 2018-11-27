@@ -1,13 +1,17 @@
 #include "Map.hpp"
 #include "Food.hpp"
 #include </home/anastasia/CLionProjects/evolution/tools/json-develop/single_include/nlohmann/json.hpp>
+#include <boost/thread/recursive_mutex.hpp>
 #include "Pixel.hpp"
+#include <random>
 
+boost::recursive_mutex mutex;
 
 using Json = nlohmann::json;
 
 Map::Map()  //  Конструктор создает поле, состоящее из воды
 {
+    std::srand(std::time(nullptr));
     double deltaX = 9;
     double deltaY = 15;
     double x = deltaX * 6;
@@ -28,7 +32,19 @@ Map::Map()  //  Конструктор создает поле, состояще
         }
         y += deltaY;
     }
+    CreateFood(rand() % 200);
+    SetPoison(rand() % 25);
 }
+
+Map::Map(const Map& mapToCopy)
+    :    map(mapToCopy.map),
+         organisms(mapToCopy.organisms)
+{}
+
+Map::Map(Map&& mapToMove)
+    :    map(mapToMove.map),
+         organisms(mapToMove.organisms)
+{}
 
 void Map::MultiplyPixels(int numberOfPixels)
 {
@@ -38,8 +54,10 @@ void Map::MultiplyPixels(int numberOfPixels)
         bool flag = false;
         while (!flag)
         {
-            int xInCells = intrand(0, heightInCells - 1);
-            int yInCells = intrand(0, widthInCells - 1);
+            //int xInCells = intrand(0, heightInCells - 1);
+            //int yInCells = intrand(0, widthInCells - 1);
+            int xInCells = rand() % (0, heightInCells - 1);
+            int yInCells = rand() % (0, widthInCells - 1);
             if (map[xInCells][yInCells]->GetType() == Hexagon::Type::WATER)
             {
                 Pixel* hex = new Pixel(map[xInCells][yInCells]->GetX(), map[xInCells][yInCells]->GetY(), (size_t) xInCells, (size_t) yInCells);
@@ -60,8 +78,8 @@ void Map::CreateFood(int numberOfFood)
         bool flag = false;
         while (!flag)
         {
-            int xInCells = intrand(0, heightInCells - 1);
-            int yInCells = intrand(0, widthInCells - 1);
+            int xInCells = rand() % (0, heightInCells - 1);
+            int yInCells = rand() % (0, widthInCells - 1);
             if (map[xInCells][yInCells]->GetType() == Hexagon::Type::WATER)
             {
                 Food* hex = new Food(map[xInCells][yInCells]->GetX(), map[xInCells][yInCells]->GetY(), (size_t)xInCells, (size_t)yInCells);
@@ -81,8 +99,8 @@ void Map::SetPoison(int numberOfPoison)
         bool flag = false;
         while (!flag)
         {
-            int xInCells = intrand(0, heightInCells - 1);
-            int yInCells = intrand(0, widthInCells - 1);
+            int xInCells = rand() % (0, heightInCells - 1);
+            int yInCells = rand() % (0, widthInCells - 1);
             if (map[xInCells][yInCells]->GetType() == Hexagon::Type::WATER)
             {
                 Poison* hex = new Poison(map[xInCells][yInCells]->GetX(), map[xInCells][yInCells]->GetY(), (size_t) xInCells, (size_t) yInCells);
@@ -94,44 +112,99 @@ void Map::SetPoison(int numberOfPoison)
     }
 }
 
+void Map::RecreateMap(const std::vector<Hexagon*>& vectorOfNewOrganisms)
+{
+    Map mapNew;
+    ClonePixels(mapNew, vectorOfNewOrganisms);
+    *this = mapNew;
+
+}
+
+void Map::ClonePixels(Map& mapNew, const std::vector<Hexagon*>& vectorOfNewOrganisms)
+{
+    std::srand(std::time(nullptr));
+    mapNew.organisms.clear();
+    mapNew.organisms = vectorOfNewOrganisms;
+    for (size_t i = 0; i < mapNew.organisms.size(); ++i)
+    {
+        mapNew.organisms[i]->SetLifes(99);
+        mapNew.organisms[i]->ResetNumberOfLifeIterations();
+        mapNew.organisms[i]->ResetMedicine();
+        //int xInCells = intrand(0, heightInCells - 1);
+        //int yInCells = intrand(0, widthInCells - 1);
+        //mapNew.organisms[i]->SetX(mapNew.map[xInCells][yInCells]->GetX());
+        //mapNew.organisms[i]->SetY(mapNew.map[xInCells][yInCells]->GetY());
+    }
+    for (size_t innerOfOrganisms = 0; innerOfOrganisms < vectorOfNewOrganisms.size(); innerOfOrganisms++)
+    {
+        bool flag = false;
+        while (!flag)
+        {
+            int xInCells = rand() % (0, heightInCells - 1);
+            int yInCells = rand() % (0, widthInCells - 1);
+            if (mapNew.map[xInCells][yInCells]->GetType() == Hexagon::Type::WATER)
+            {
+                // изменить координаты x, y и cellstr и cellcol
+                /*mapNew.organisms[innerOfOrganisms]->SetCellStr(xInCells);
+                mapNew.organisms[innerOfOrganisms]->SetCellCol(yInCells);
+                mapNew.organisms[innerOfOrganisms]->SetX(mapNew.map[xInCells][yInCells]->GetX());
+                mapNew.organisms[innerOfOrganisms]->SetY(mapNew.map[xInCells][yInCells]->GetY());
+                mapNew.organisms[innerOfOrganisms]->SetLifes(99);
+                // приравнять указатель к ячейке карты(установить пиксель)
+                map[xInCells].erase(yInCells);
+                map[xInCells].insert(organisms[innerOfOrganisms], yInCells);
+                flag = true;*/
+                Brain brain = mapNew.organisms[innerOfOrganisms]->GetBrain();
+                brain.Train();
+                Pixel* hex = new Pixel(map[xInCells][yInCells]->GetX(), map[xInCells][yInCells]->GetY(), (size_t) xInCells, (size_t) yInCells, brain);
+                map[xInCells].erase(yInCells);
+                map[xInCells].insert(hex, yInCells);
+                mapNew.organisms.push_back(hex);
+                flag = true;
+            }
+        }
+    }
+}
+
 Map::Map(const std::string& path)
 {
-    size_t i = 0;
-    size_t j = 0;
-    // for (size_t i = 0; i < heightInCells; ++i)
+    boost::filesystem::path path_to_file = path + "/" + "Map";
+    if (!boost::filesystem::exists(path_to_file))
+        throw std::runtime_error("Error in uploading files");
+    std::ifstream file(path_to_file.string());
+    std::string s;
+    std::string line;
+    while (std::getline(file, line))
+        s += line;
+    file.close();
+    Json object = Json::parse(s);
+    for (auto& m : object["Map"])
     {
         Row row;
         map.push_back(row);
-        // for (size_t j = 0; j < widthInCells; ++j)
+        for (auto& obj : m)
         {
-            boost::filesystem::path path_to_file = path + "/" + std::to_string(i) + "_" + std::to_string(j);
-            if (!boost::filesystem::exists(path_to_file))
-                throw std::runtime_error("Error in uploading files");
-            std::ifstream file(path_to_file.string());
-            std::string s;
-            std::string line;
-            while (std::getline(file, line))
-                s += line;
-            file.close();
-            Json object = Json::parse(s);
-            auto x = static_cast<double>(object["x"]);
-            auto y = static_cast<double>(object["y"]);
-            auto medicine = static_cast<double>(object["medicine"]);
-            if (object["type"] == "1")
+            auto cellStr = static_cast<size_t >(obj["cellStr"]);
+            auto cellCol = static_cast<size_t>(obj["cellCol"]);
+            auto x = static_cast<double>(obj["x"]);
+            auto y = static_cast<double>(obj["y"]);
+            auto medicine = static_cast<double>(obj["medicine"]);
+            if (obj["type"] == 1)
             {
-                map[i].push_back(new Food(x, y, i, j, medicine));
+                map[cellStr].push_back(new Food(x, y, cellStr, cellCol, medicine));
             }
-            else if (object["type"] == "2")
+            else if (obj["type"] == 2)
             {
-                map[i].push_back(new Water(x, y, i, j));
+                map[cellStr].push_back(new Water(x, y, cellStr, cellCol));
             }
-            else if (object["type"] == "3")
+            else if (obj["type"] == 3)
             {
-                map[i].push_back(new Poison(x, y, i, j, medicine));
+                map[cellStr].push_back(new Poison(x, y, cellStr, cellCol, medicine));
             }
-            else if (object["type"] == "4")
+            else if (obj["type"] == 4)
             {
-                map[i].push_back(new Pixel(x, y, i, j, Brain(object["layers"])));
+                map[cellStr].push_back(new Pixel(x, y, cellStr, cellCol, Brain(obj)));
+                organisms.push_back(map[cellStr][cellCol]);
             }
         }
     }
@@ -143,6 +216,7 @@ Map& Map::operator=(const Map& mapOld)
     {
         map = mapOld.map;
         organisms = mapOld.organisms;
+        staticOrganisms = mapOld.staticOrganisms;
     }
     return *this;
 }
@@ -151,30 +225,41 @@ Map& Map::operator=(Map&& mapOld)
 {
     map = std::move(mapOld.map);
     organisms = std::move(mapOld.organisms);
+    staticOrganisms = std::move(mapOld.staticOrganisms);
 }
 void Map::Update()
 {
+    boost::recursive_mutex::scoped_lock lock{mutex};
     size_t size = organisms.size();
     for (int i = organisms.size() -  1; i >= 0; --i)
     {
         if (organisms[i]->IsAlive())
             organisms[i]->Update(*this);
-        else if (!organisms[i]->IsAlive() && organisms.size() > 2)
+        else if (!organisms[i]->IsAlive() && organisms.size() > 10)
         {
+            map[organisms[i]->GetCellStr()].erase(organisms[i]->GetCellCol());
+            if (!organisms[i]->GetisHealfy())
+            {
+                map[organisms[i]->GetCellStr()].insert(new Poison(organisms[i]->GetX(), organisms[i]->GetY(), organisms[i]->GetCellStr(), organisms[i]->GetCellCol()),
+                                                       organisms[i]->GetCellCol());
+            }
+            else
+            {
+                map[organisms[i]->GetCellStr()].insert(new Food(organisms[i]->GetX(), organisms[i]->GetY(), organisms[i]->GetCellStr(), organisms[i]->GetCellCol()),
+                                                       organisms[i]->GetCellCol());
+            }
+
+            organisms.erase(organisms.begin() + i);
+        }
+        else
+        {
+            staticOrganisms.push_back(organisms[i]);
             map[organisms[i]->GetCellStr()].erase(organisms[i]->GetCellCol());
             map[organisms[i]->GetCellStr()].insert(new Food(organisms[i]->GetX(), organisms[i]->GetY(), organisms[i]->GetCellStr(), organisms[i]->GetCellCol()),
                                                    organisms[i]->GetCellCol());
             organisms.erase(organisms.begin() + i);
         }
-        else
-        {
-            organisms[i]->SetHex().setFillColor(sf::Color::White);
-            map[organisms[i]->GetCellStr()].erase(organisms[i]->GetCellCol());
-            map[organisms[i]->GetCellStr()].insert(new Food(organisms[i]->GetX(), organisms[i]->GetY(), organisms[i]->GetCellStr(), organisms[i]->GetCellCol()),
-                                                   organisms[i]->GetCellCol());
-        }
     }
-
 }
 
 Row& Map::operator[](size_t index)
@@ -213,11 +298,16 @@ std::vector<Hexagon*> Map::GetOrganisms() const
     return organisms;
 }
 
-void Map::SetObject(Hexagon* obj)
+std::vector<Hexagon*> Map::GetStaticOrganisms() const
 {
-    map[obj->GetCellStr()].erase(obj->GetCellCol());
-    map[obj->GetCellStr()].insert(obj, obj->GetCellCol());
+    return staticOrganisms;
 }
+
+size_t Map::GetNumberOfAliveOrganisms() const
+{
+    return organisms.size();
+}
+
 
 void Map::SetOrganism(Hexagon* org)
 {
@@ -228,7 +318,6 @@ void Map::Swap(Hexagon* hex1, Hexagon* hex2)
 {
     map[hex1->GetCellStr()][hex1->GetCellCol()] = hex2;
     map[hex2->GetCellStr()][hex2->GetCellCol()] = hex1;
-
     double copy = hex1->GetX();
     hex1->SetX(hex2->GetX());
     hex2->SetX(copy);
@@ -246,31 +335,66 @@ void Map::Swap(Hexagon* hex1, Hexagon* hex2)
 void Map::SaveToFile() const
 {
     boost::filesystem::path path = boost::filesystem::current_path().parent_path();
-    path += "/records";
+    path += "/recordsNew";
     if(!boost::filesystem::exists(path))
-        boost::filesystem::create_directory(path);  //  добавить дату в название папки, загружать всегда последнюю
-    std::string path_to_file;
-    size_t i = 0;
-    size_t j = 0;
-    //for (size_t i = 0; i < heightInCells; ++i)
+        boost::filesystem::create_directory(path);
+    std::string path_to_file = path.string() + "/Map";
+    std::fstream file(path_to_file, std::ios::app);
+    file << "{" << std::endl;
+    file << "\t\"Map\" : " << std::endl;
+    file << "\t[" << std::endl;
+    for (size_t i = 0; i < heightInCells; ++i)
     {
-        //for (size_t j = 0; j < widthInCells; ++j)
+        file << "\t\t[" << std::endl;
+        for (size_t j = 0; j < widthInCells; ++j)
         {
-            path_to_file = path.string() + "/" + std::to_string(i) + "_" + std::to_string(j);
-            std::fstream file(path_to_file, std::ios::app);
-            file << "{" << std::endl;
+            file << "\t\t\t{" << std::endl;
             map[i][j]->SaveToFile(path_to_file);
-            file << "}" << std::endl;
-            file.close();
+            file << "\t\t\t}";
+            if (j != widthInCells - 1)
+                file << ",";
+            file << std::endl;
         }
+        file << "\t\t]";
+        if (i != heightInCells - 1)
+            file << ",";
+        file << std::endl;
     }
+    file << "\t]" << std::endl;
+    file << "}" << std::endl;
+    file.close();
 }
 
-/*void Map::UploadFromFile()
+
+void Map::UploadFromFile()
 {
     boost::filesystem::path path = boost::filesystem::current_path().parent_path();
-    path += "/records";
+    path += "/recordsNew";
     if(!boost::filesystem::exists(path))
         throw std::runtime_error("UploadFromFile : can't file directory to load from");
     *this = Map(path.string());
-}*/
+}
+
+void Map::Print(sf::RenderWindow* window) const
+{
+    boost::recursive_mutex::scoped_lock lock{mutex};
+    for (size_t i = 1; i < heightInCells; ++i)
+    {
+        for (size_t j = 0; j < widthInCells; ++j)
+        {
+            map[i][j]->Print(window);
+
+        }
+    }
+    /*sf::Font font;
+    font.loadFromFile("/home/anastasia/CLionProjects/evolution/include/Arial.ttf");
+    sf::Text text("", font, 20);
+    text.setColor(sf::Color::Red);
+    text.setStyle(sf::Text::Bold);
+    std::ostringstream numberOfEvolution;
+    int evolutionNumber = 3;
+    numberOfEvolution << evolutionNumber;
+    text.setString(numberOfEvolution.str());
+    window->draw(text);*/
+    // std::this_thread::sleep_for(std::chrono::milliseconds(100));
+}

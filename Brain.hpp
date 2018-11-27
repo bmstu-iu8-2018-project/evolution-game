@@ -26,8 +26,8 @@ public:
                   const size_t &inNumOfNeuronsInHiddenLayers = 10);
     Brain(const Json&);
     ~Brain() = default;
-
-    void Train() const;
+    Brain& operator=(const Brain&);
+    void Train();
 
     std::vector<Neuron*> GetLayer(size_t) const;
 

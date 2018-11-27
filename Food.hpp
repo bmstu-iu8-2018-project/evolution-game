@@ -11,11 +11,8 @@ class Food
 {
 public:
     Food(const double xNew, const double yNew, const size_t CellStrNew, const size_t CellColNew, double Medicine = rand() % 5)
-            :    Hexagon(Type::FOOD, xNew, yNew, CellStrNew, CellColNew)
+        :    Hexagon(Type::FOOD, xNew, yNew, CellStrNew, CellColNew)
     {
-        hexagon.setFillColor(sf::Color(93, 161, 48)); // Green
-        hexagon.setOutlineThickness(1);
-        hexagon.setOutlineColor(sf::Color::Black);
         medicine = Medicine;
     }
 
@@ -24,7 +21,7 @@ public:
 
     ~Food() = default;
 
-    void Print(sf::RenderWindow* window) override
+    void Print(sf::RenderWindow* window) const override
     {
         sf::CircleShape hexagon1(10, 6);
         hexagon1.setFillColor(sf::Color(93, 161, 48));
@@ -42,16 +39,13 @@ public:
     Water(const double xNew, const double yNew, const size_t CellStrNew, const size_t CellColNew)
             :    Hexagon(Type::WATER, xNew, yNew, CellStrNew, CellColNew)
     {
-        hexagon.setFillColor(sf::Color(66, 170, 255)); // Blue
-        hexagon.setOutlineThickness(1);
-        hexagon.setOutlineColor(sf::Color::Black);
         medicine = 0;
     }
     void Update(Map& map) override
     {}
     ~Water() = default;
 
-    void Print(sf::RenderWindow* window) override
+    void Print(sf::RenderWindow* window) const override
     {
         sf::CircleShape hexagon1(10, 6);
         hexagon1.setFillColor(sf::Color(66, 170, 255));
@@ -69,16 +63,13 @@ public:
     Poison(const double xNew, const double yNew, const size_t CellStrNew, const size_t CellColNew, double Medicine = -(rand() % 12))
             :    Hexagon(Type::POISON, xNew, yNew, CellStrNew, CellColNew)
     {
-        hexagon.setFillColor(sf::Color(207, 66, 52)); // Red
         medicine = Medicine;
-        hexagon.setOutlineThickness(1);
-        hexagon.setOutlineColor(sf::Color::Black);
     }
     void Update(Map& map) override
     {}
     ~Poison() = default;
 
-    void Print(sf::RenderWindow* window) override
+    void Print(sf::RenderWindow* window) const override
     {
         sf::CircleShape hexagon1(10, 6);
         hexagon1.setFillColor(sf::Color(207, 66, 52));
@@ -89,4 +80,4 @@ public:
     }
 };
 
-#endif //EVOLUTION_FOOD_HPP
+#endif

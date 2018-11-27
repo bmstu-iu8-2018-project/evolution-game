@@ -1,30 +1,83 @@
 #include "Evolution.hpp"
 
+//  boost::recursive_mutex mutex;
+
 Evolution::Evolution()
 {
+    evolutionNumber = 1;
     map = Map();
-    //button1 = Button(0, 0);
     window.create(sf::VideoMode(map.GetWidth(), map.GetHeight()), "Evolution");
 }
 
-void Evolution::run()
+Evolution::Evolution(const Evolution& ev)
+    :        map(ev.map),
+             keyboard(ev.keyboard)
 {
-    int x = 100;
-    map.MultiplyPixels(5);
-    map.CreateFood(150);
-    map.SetPoison(15);
-    sf::CircleShape button = sf::CircleShape(20, 3);
-    button.setOutlineThickness(1);
-    button.setFillColor(sf::Color(169, 169, 169));
-    button.setOutlineColor(sf::Color::Red);
-    sf::CircleShape button2 = sf::CircleShape(20, 3);
-    button2.setOutlineThickness(1);
-    button2.setFillColor(sf::Color(169, 169, 169));
-    button2.setOutlineColor(sf::Color::Red);
-    button2.setRotation(180);
+    window.create(sf::VideoMode(ev.map.GetWidth(), ev.map.GetHeight()), "Evolution");
+}
+
+Evolution::Evolution(Evolution&& ev)
+    :    threads(std::move(ev.threads)),
+         map(std::move(ev.map)),
+         keyboard(std::move(ev.keyboard))
+{
+     window.create(sf::VideoMode(ev.map.GetWidth(), ev.map.GetHeight()), "Evolution");
+}
+
+/*void Evolution::CatchingEvents()
+{
     while (window.isOpen())
     {
-        for (unsigned int inner  = 0; inner < iteraition; ++inner)
+        sf::Event event;
+        while (window.pollEvent(event))
+        {
+            if (event.type == sf::Event::Closed || keyboard.isPressed(sf::Keyboard::Escape))
+                window.close();
+            else if (event.type == sf::Event::KeyPressed)
+                keyboard.press(event.key.code);
+            else if (event.type == sf::Event::KeyReleased)
+                keyboard.release(event.key.code);
+            else if (keyboard.isPressed(sf::Keyboard::S))
+            {
+                map.SaveToFile();
+                //  window.close();
+            }
+            else if (keyboard.isPressed(sf::Keyboard::U))
+            {
+                map.UploadFromFile();
+            }
+            window.clear();
+        }
+    }
+}*/
+
+void Evolution::Statistics()
+{
+    double statisticsOfLifeIt = 0;
+    for (size_t inner = 0; inner < map.GetStaticOrganisms().size(); ++inner)
+    {
+        statisticsOfLifeIt += map.GetStaticOrganisms()[inner]->GetNumberOfLifeIterations();
+    }
+    statisticsOfLifeIt /= map.GetStaticOrganisms().size();
+    boost::filesystem::path path = boost::filesystem::current_path().parent_path();
+    path += "/recordsNew";
+    if(!boost::filesystem::exists(path))
+        boost::filesystem::create_directory(path);
+    std::string path_to_file = path.string() + "/Statistics";
+    std::fstream fl(path_to_file, std::ios::app);
+    fl << evolutionNumber << " " << statisticsOfLifeIt << std::endl;
+    fl.close();
+}
+
+
+void Evolution::run()
+{
+    map.MultiplyPixels(10);
+    //  threads.emplace_back(std::thread(&Evolution::CatchingEvents, this/*, std::ref(*this)*/));
+    while(window.isOpen())
+    {
+        //for(size_t inner = 0; inner < 100; ++inner)
+        while(map.GetNumberOfAliveOrganisms() > 0)
         {
             sf::Event event;
             while (window.pollEvent(event))
@@ -38,70 +91,37 @@ void Evolution::run()
                 else if (keyboard.isPressed(sf::Keyboard::S))
                 {
                     map.SaveToFile();
-                    window.close();
+                    //  window.close();
                 }
                 else if (keyboard.isPressed(sf::Keyboard::U))
                 {
-                    // map.UploadFromFile();
-                    window.close();
-                } else if (keyboard.isPressed(sf::Keyboard::W)) {
-                    x += 100;
-                    button.setFillColor(sf::Color::Green);
-                } else if (keyboard.isPressed(sf::Keyboard::E)) {
-                    if (x >= 100)
-                        x -= 100;
-                    button2.setFillColor(sf::Color::Green);
-                }
-                if (!(keyboard.isPressed(sf::Keyboard::W))) {
-                    button.setFillColor(sf::Color(169, 169, 169));
-                }
-                if (!(keyboard.isPressed(sf::Keyboard::E))) {
-                    if (x > 0)
-                        button2.setFillColor(sf::Color(169, 169, 169));
+                    map.UploadFromFile();
                 }
                 window.clear();
             }
-            for (size_t i = 1; i < map.GetHeightInCells(); ++i)
-            {
-                for (size_t j = 0; j < map.GetWidthInCells(); ++j)
-                {
-                    map[i][j]->Print(&window);
-                    if (map[i][j]->GetHex().getFillColor() == sf::Color::Black)
-                        throw std::runtime_error("not hex");
-
-                }
-            }
+            map.Print(&window);
             map.Update();
-            /*button1.SetX(20);
-            button1.SetY(5);
-            button1.GetButton().setPosition(50, 5);
-            window.draw(button1.GetButton());*/
-            button.setPosition(0, 5);
-            button2.setPosition(40, 70);
-            window.draw(button);
-            window.draw(button2);
-            std::this_thread::sleep_for(std::chrono::milliseconds(x));
+            //  threads.emplace_back(&Map::Update, map);
+            //  threads.emplace_back(&Map::Print, map);
             window.display();
         }
-        /*std::vector<Hexagon*> organisms = map.GetOrganisms();
-        size_t size = organisms.size();
+        Statistics();
+        ++evolutionNumber;
+        //std::vector<Hexagon*> organisms = map.GetStaticOrganisms();
+        // вызов статистики
+        /*std::vector<Hexagon*> newOrganisms = map.GetStaticOrganisms();
+        size_t size = newOrganisms.size();
         for (size_t i = 0; i < size; ++i)
         {
-                for (int j = 0; j < 5; ++j)
-                {
-                    organisms.push_back(organisms[i]);
-                }
-        }
-        for (size_t i = 0; i < size; ++i)
-        {
-            for (int j = 0; j < 5; ++j)
-            {
-                Brain brain = organismsNew[i]->GetBrain();
-                brain.Train();
-                organismsNew[i]->SetBrain(brain);
-                organisms.push_back(organismsNew[i]);
-            }
+            Brain brain = newOrganisms[i]->GetBrain();
+            brain.Train();
+            newOrganisms[i]->SetBrain(brain);
+            newOrganisms[i]->SetLifes(99);
+            newOrganisms[i]->ResetNumberOfLifeIterations();
+            newOrganisms[i]->ResetMedicine();
+            organisms.push_back(newOrganisms[i]);
         }*/
-        //std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        // map.RecreateMap(organisms);
+        map.RecreateMap(map.GetStaticOrganisms());
     }
 }
