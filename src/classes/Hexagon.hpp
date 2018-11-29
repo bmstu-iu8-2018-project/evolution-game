@@ -44,6 +44,7 @@ public:
     Type GetType() const;
     double GetLifes() const;
     double GetMedicine() const;
+    bool GetisHealfy() const;
     virtual Brain GetBrain() const;
     virtual unsigned int GetNumberOfLifeIterations() const;
 
@@ -70,7 +71,7 @@ protected:
     size_t cellCol;
     Type type;
     double lifes;
-    double medicine;  // отрицательна если яд и положительна если лекарство
+    double medicine;
     bool isHealfy = true;
     int intrand(int a, int b)
     {

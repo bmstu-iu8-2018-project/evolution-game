@@ -7,6 +7,7 @@
 #include <map>
 #include <iostream>
 #include <string>
+#include <random>
 
 #include "NeuronCreator.hpp"
 #include "TrainAlgorithm.hpp"

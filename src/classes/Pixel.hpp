@@ -2,6 +2,7 @@
 #define PIXEL_HPP
 
 #include <algorithm>
+#include <sstream>
 #include "Hexagon.hpp"
 #include "Food.hpp"
 #include "Map.hpp"
@@ -20,6 +21,8 @@ public:
     Pixel(const double, const double, const size_t, const size_t, Brain);
     Pixel(const float xNew, const float yNew, const size_t CellStrNew,
           const size_t CellColNew, const double lifesNew, Brain brainNew);
+    Pixel(const float xNew, const float yNew, const size_t CellStrNew,
+          const size_t CellColNew, const double lifesNew, Brain brainNew, double medicineNew);
     Pixel(const Pixel& hex);
      ~Pixel() = default;
     Pixel& operator=(const Pixel&);

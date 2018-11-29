@@ -94,9 +94,11 @@ public:
     std::vector<Hexagon*> GetOrganisms() const;
     std::vector<Hexagon*> GetStaticOrganisms() const;
     size_t GetNumberOfAliveOrganisms() const;
+    unsigned int GetEvolutionNumber() const;
 
     void SetOrganism(Hexagon*);
     void Swap(Hexagon*, Hexagon*);
+    void IncreaseEvolutionNumber();
     void SaveToFile() const;
     void UploadFromFile();
     void Print(sf::RenderWindow*) const;
@@ -108,6 +110,7 @@ private:
     std::vector<Row> map;
     std::vector<Hexagon*> organisms;
     std::vector<Hexagon*> staticOrganisms;
+    unsigned int evolutionNumber;
     int intrand(int a, int b)
     {
         static std::default_random_engine e;

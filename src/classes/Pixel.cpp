@@ -22,6 +22,20 @@ Pixel::Pixel(const double xNew, const double yNew, const size_t CellStrNew, cons
 }
 
 Pixel::Pixel(const float xNew, const float yNew, const size_t CellStrNew,
+      const size_t CellColNew, const double lifesNew, Brain brainNew, double medicineNew)
+        :    Hexagon(Type::PIXEL, xNew, yNew, CellStrNew, CellColNew),
+             brain(brainNew),
+             numberOfLifeIterations(1)
+
+{
+    medicine = medicineNew;
+    if (medicine >= 0)
+        isHealfy = true;
+    else
+        isHealfy = false;
+}
+
+Pixel::Pixel(const float xNew, const float yNew, const size_t CellStrNew,
              const size_t CellColNew, const double lifesNew, Brain brainNew)
         :    Hexagon(Type::PIXEL, xNew, yNew, CellStrNew, CellColNew)
 {
@@ -111,7 +125,7 @@ void Pixel::Update(Map& map)
     if (isHealfy)
         lifes -= 1;
     else
-        lifes -= medicine;
+        lifes -= 5;
 }
 
 void Pixel::EatingFood(Hexagon* hexagon1, Map& map)
@@ -137,7 +151,7 @@ void Pixel::Move(Map& map, Hexagon* hexagon1)
             EatingFood(hexagon1, map);
             return;
         }
-        /*else if (lifes > 90)
+        /*else if (lifes > 98)
         {
             Reproduction(map);
             return;
@@ -238,22 +252,11 @@ void Pixel::SaveToFile(const std::string& path_to_file) const
     fl << "\t\t\t\t" << "\"y\"" << " : " << y << "," << std::endl;
     fl << "\t\t\t\t" << "\"type\"" << " : " << type << "," << std::endl;
     fl << "\t\t\t\t" << "\"medicine\"" << " : " << medicine << "," << std::endl;
+    fl << "\t\t\t\t" << "\"lifes\"" << " : " << medicine << "," << std::endl;
     fl << "\t\t\t\t" << "\"isHealfy\"" << " : " << isHealfy << "," << std::endl;
     fl.close();
     brain.SaveNetworkState(path_to_file);
 }
-
-/*void Pixel::SaveToFile(const std::string& path_to_file) const
-{
-    std::fstream fl(path_to_file, std::ios::app);
-    fl << "    " << "\"x\"" << " : " << x << "," << std::endl;
-    fl << "    " << "\"y\"" << " : " << y << "," << std::endl;
-    fl << "    " << "\"type\"" << " : " << type << "," << std::endl;
-    fl << "    " << "\"medicine\"" << " : " << medicine << "," << std::endl;
-    fl << "    " << "\"isHealfy\"" << " : " << isHealfy << "," << std::endl;
-    fl.close();
-    brain.SaveNetworkState(path_to_file);
-}*/
 
 void Pixel::Print(sf::RenderWindow* window) const
 {
@@ -261,6 +264,15 @@ void Pixel::Print(sf::RenderWindow* window) const
     hexagon1.setFillColor(sf::Color::Yellow);
     hexagon1.setOutlineThickness(1);
     hexagon1.setOutlineColor(sf::Color::Black);
-    hexagon1.setPosition(x, y);
+    hexagon1.setPosition((float)x, (float)y);
     window->draw(hexagon1);
+    sf::Font font;
+    font.loadFromFile("/home/mariasolovyova/CLionProjects/untitled5/Arial.ttf");
+    sf::Text text("", font, 13);
+    text.setColor(sf::Color::Black);
+    std::ostringstream hexagonLifesString;
+    hexagonLifesString << lifes;
+    text.setString(hexagonLifesString.str());
+    text.setPosition((float)x, (float)y);
+    window->draw(text);
 }

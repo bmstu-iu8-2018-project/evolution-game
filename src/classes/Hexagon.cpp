@@ -56,6 +56,11 @@ size_t  Hexagon::GetCellCol() const
     return cellCol;
 }
 
+bool Hexagon::GetisHealfy() const
+{
+    return isHealfy;
+}
+
 Hexagon::Type Hexagon::GetType() const
 {
     return type;
