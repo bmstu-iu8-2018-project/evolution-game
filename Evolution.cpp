@@ -1,10 +1,11 @@
 #include "Evolution.hpp"
 
+bool flag;
+
 //  boost::recursive_mutex mutex;
 
 Evolution::Evolution()
 {
-    evolutionNumber = 1;
     map = Map();
     window.create(sf::VideoMode(map.GetWidth(), map.GetHeight()), "Evolution");
 }
@@ -65,19 +66,28 @@ void Evolution::Statistics()
         boost::filesystem::create_directory(path);
     std::string path_to_file = path.string() + "/Statistics";
     std::fstream fl(path_to_file, std::ios::app);
-    fl << evolutionNumber << " " << statisticsOfLifeIt << std::endl;
+    fl << map.GetEvolutionNamber() << " " << statisticsOfLifeIt << std::endl;
     fl.close();
 }
 
 
 void Evolution::run()
 {
-    map.MultiplyPixels(10);
+    map.MultiplyPixels(20);
+    sf::CircleShape button = sf::CircleShape(20, 3);
+    button.setOutlineThickness(1);
+    button.setFillColor(sf::Color(169, 169, 169));
+    button.setOutlineColor(sf::Color::Red);
+    sf::CircleShape button2 = sf::CircleShape(20, 3);
+    button2.setOutlineThickness(1);
+    button2.setFillColor(sf::Color(169, 169, 169));
+    button2.setOutlineColor(sf::Color::Red);
+    button2.setRotation(180);
     //  threads.emplace_back(std::thread(&Evolution::CatchingEvents, this/*, std::ref(*this)*/));
     while(window.isOpen())
     {
         //for(size_t inner = 0; inner < 100; ++inner)
-        while(map.GetNumberOfAliveOrganisms() > 0)
+        while(map.GetNumberOfAliveOrganisms() > 10)
         {
             sf::Event event;
             while (window.pollEvent(event))
@@ -96,32 +106,44 @@ void Evolution::run()
                 else if (keyboard.isPressed(sf::Keyboard::U))
                 {
                     map.UploadFromFile();
+                }  else if (keyboard.isPressed(sf::Keyboard::W)) {
+                    map.IncreaseTimesToSleep(10);
+                    button.setFillColor(sf::Color::Green);
+                } else if (keyboard.isPressed(sf::Keyboard::E)) {
+                    if (map.GetTimeToSleep() >= 10) {
+                        map.DecreaseTimesToSleep(10);
+                    }
+                    button2.setFillColor(sf::Color::Green);
+                }
+                if (!(keyboard.isPressed(sf::Keyboard::W))) {
+                    button.setFillColor(sf::Color(169, 169, 169));
+                }
+                if (!(keyboard.isPressed(sf::Keyboard::E))) {
+                    if (map.GetTimeToSleep() > 0)
+                        button2.setFillColor(sf::Color(169, 169, 169));
                 }
                 window.clear();
             }
-            map.Print(&window);
-            map.Update();
+            flag = (map.GetTimeToSleep() > 10);
+            if (flag) {
+                map.Print(&window);
+                map.Update();
+            } else {
+                map.Update();
+            }
+
             //  threads.emplace_back(&Map::Update, map);
             //  threads.emplace_back(&Map::Print, map);
+            button.setPosition(0, 5);
+            button2.setPosition(40, 70);
+            window.draw(button);
+            window.draw(button2);
             window.display();
+
         }
+        map.SetStaticOrganisms(map.GetOrganisms());
         Statistics();
-        ++evolutionNumber;
-        //std::vector<Hexagon*> organisms = map.GetStaticOrganisms();
-        // вызов статистики
-        /*std::vector<Hexagon*> newOrganisms = map.GetStaticOrganisms();
-        size_t size = newOrganisms.size();
-        for (size_t i = 0; i < size; ++i)
-        {
-            Brain brain = newOrganisms[i]->GetBrain();
-            brain.Train();
-            newOrganisms[i]->SetBrain(brain);
-            newOrganisms[i]->SetLifes(99);
-            newOrganisms[i]->ResetNumberOfLifeIterations();
-            newOrganisms[i]->ResetMedicine();
-            organisms.push_back(newOrganisms[i]);
-        }*/
-        // map.RecreateMap(organisms);
+        map.IncreaseEvolutionNumber();
         map.RecreateMap(map.GetStaticOrganisms());
     }
 }

@@ -84,9 +84,12 @@ public:
     void SetPoison(int);
     void RecreateMap(const std::vector<Hexagon*>&);
     void ClonePixels(Map&, const std::vector<Hexagon*>&);
+    void IncreaseEvolutionNumber();
 
     unsigned int GetWidth() const;
     unsigned int GetHeight() const;
+    unsigned int GetEvolutionNamber() const;
+    int GetTimeToSleep() const;
 
     size_t GetWidthInCells() const;
     size_t GetHeightInCells() const;
@@ -95,12 +98,18 @@ public:
     std::vector<Hexagon*> GetStaticOrganisms() const;
     size_t GetNumberOfAliveOrganisms() const;
 
+    void SetStaticOrganisms(std::vector<Hexagon*>);
     void SetOrganism(Hexagon*);
+    void IncreaseTimesToSleep(int);
+    void DecreaseTimesToSleep(int);
+    void SetEvolutionNamber(unsigned int);
     void Swap(Hexagon*, Hexagon*);
     void SaveToFile() const;
     void UploadFromFile();
-    void Print(sf::RenderWindow*) const;
+    void Print(sf::RenderWindow*);
 private:
+    unsigned int evolutionNumber = 1;
+    int timeToSleep = 0;
     static const unsigned int width = 2000;
     static const unsigned int height = 1000;
     static const size_t widthInCells = 94;

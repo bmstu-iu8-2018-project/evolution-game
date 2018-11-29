@@ -33,10 +33,11 @@ public:
     void SaveToFile(const std::string&) const;
 
     Brain GetBrain() const override;
-    unsigned int GetNumberOfLifeIterations() const;
+    unsigned int GetNumberOfLifeIterations() const override;
+    void SetNumberOfLifeIterations(unsigned int) override;
     void SetBrain(const Brain&) override;
     void ResetNumberOfLifeIterations() override;
-    void Print(sf::RenderWindow*) const override;
+    void Print(sf::RenderWindow*) override;
 };
 
 #endif

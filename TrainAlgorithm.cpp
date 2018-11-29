@@ -11,6 +11,13 @@ double doublerand(double a, double b)
     return dis(e);
 }
 
+int intrand(int a, int b)
+{
+    static std::default_random_engine e;
+    static std::uniform_int_distribution<> dis(a, b);
+    return dis(e);
+}
+
 void TrainAlgorithm::CommonInitialization()
 {
     for (size_t innerOfLayers = 0; innerOfLayers < brain->Size(); innerOfLayers++)
@@ -59,18 +66,15 @@ TrainAlgorithm::TrainAlgorithm(Brain* newBrain)
 void TrainAlgorithm::Train(Brain* brain1)
 {
     brain = brain1;
-    for (size_t innerOfLayers = 0; innerOfLayers < brain->Size(); innerOfLayers++)
+    int howMuchWeightsToChange = rand() % 3 + 1;
+    for (int i = 0; i < howMuchWeightsToChange; ++i)
     {
-        for (size_t innerOfNeurons = 0; innerOfNeurons < brain->GetLayer(innerOfLayers).size(); innerOfNeurons++)
-        {
-            Neuron* currentNeuron = brain->GetLayer(innerOfLayers).at(innerOfNeurons);
-            for (size_t innerOfLinks = 0; innerOfLinks < currentNeuron->GetNumOfLinks(); innerOfLinks++)
-            {
-                Link* currentLink = currentNeuron->at(innerOfLinks);
-                double randWeight = doublerand(-1, 1) / 10;
-                currentLink->UpdateWeight(randWeight);
-            }
-        }
+        size_t randomLayer = rand() % (brain->Size() - 1);
+        size_t randomNeuron = rand() % (brain->GetLayer(randomLayer).size());
+        size_t randomLink = rand() % (brain->GetLayer(randomLayer).at(randomNeuron)->GetNumOfLinks());
+        Link* currentLink = brain->GetLayer(randomLayer).at(randomNeuron)->at(randomLink);
+        double randWeight = intrand(-100, 100) / 100000;
+        currentLink->UpdateWeight(randWeight);
     }
 }
 
