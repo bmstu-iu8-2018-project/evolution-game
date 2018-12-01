@@ -4,6 +4,7 @@ Pixel::Pixel()
 {
     numberOfLifeIterations = 1;
     brain = Brain();
+    color = sf::Color::Yellow;
 }
 
 Pixel::Pixel(const double xNew, const double yNew, const size_t CellStrNew, const size_t CellColNew)
@@ -11,6 +12,7 @@ Pixel::Pixel(const double xNew, const double yNew, const size_t CellStrNew, cons
 {
     numberOfLifeIterations = 1;
     medicine = 0;
+    color = sf::Color::Yellow;
 }
 
 Pixel::Pixel(const double xNew, const double yNew, const size_t CellStrNew, const size_t CellColNew, Brain newBrain)
@@ -19,20 +21,7 @@ Pixel::Pixel(const double xNew, const double yNew, const size_t CellStrNew, cons
 {
     numberOfLifeIterations = 1;
     medicine = 0;
-}
-
-Pixel::Pixel(const float xNew, const float yNew, const size_t CellStrNew,
-      const size_t CellColNew, const double lifesNew, Brain brainNew, double medicineNew)
-        :    Hexagon(Type::PIXEL, xNew, yNew, CellStrNew, CellColNew),
-             brain(brainNew),
-             numberOfLifeIterations(1)
-
-{
-    medicine = medicineNew;
-    if (medicine >= 0)
-        isHealfy = true;
-    else
-        isHealfy = false;
+    color = sf::Color::Yellow;
 }
 
 Pixel::Pixel(const float xNew, const float yNew, const size_t CellStrNew,
@@ -42,6 +31,7 @@ Pixel::Pixel(const float xNew, const float yNew, const size_t CellStrNew,
     numberOfLifeIterations = 1;
     lifes = lifesNew;
     brain = brainNew;
+    color = sf::Color::Yellow;
 }
 
 Pixel::Pixel(const Pixel& hex)
@@ -50,6 +40,7 @@ Pixel::Pixel(const Pixel& hex)
     numberOfLifeIterations = 1;
     lifes = hex.lifes;
     medicine = hex.medicine;
+    color = hex.color;
 }
 
 std::vector<Hexagon*> Pixel::LookArond(Map& map) const
@@ -228,6 +219,11 @@ unsigned int Pixel::GetNumberOfLifeIterations() const
     return numberOfLifeIterations;
 }
 
+void Pixel::SetNumberOfLifeIterations(unsigned int num)
+{
+    numberOfLifeIterations = num;
+}
+
 Brain Pixel::GetBrain() const
 {
     return brain;
@@ -258,21 +254,22 @@ void Pixel::SaveToFile(const std::string& path_to_file) const
     brain.SaveNetworkState(path_to_file);
 }
 
-void Pixel::Print(sf::RenderWindow* window) const
+void Pixel::Print(sf::RenderWindow* window)
 {
-    sf::CircleShape hexagon1(10, 6);
-    hexagon1.setFillColor(sf::Color::Yellow);
-    hexagon1.setOutlineThickness(1);
-    hexagon1.setOutlineColor(sf::Color::Black);
-    hexagon1.setPosition((float)x, (float)y);
-    window->draw(hexagon1);
+    //sf::CircleShape hexagon1(10, 6);
+    hexagon.setFillColor(color);
+    hexagon.setOutlineThickness(1);
+    hexagon.setOutlineColor(sf::Color::Black);
+    hexagon.setPosition((float)x, (float)y);
+    window->draw(hexagon);
     sf::Font font;
-    font.loadFromFile("/home/mariasolovyova/CLionProjects/untitled5/Arial.ttf");
-    sf::Text text("", font, 13);
+    font.loadFromFile("/home/mariasolovyova/CLionProjects/untitled4/Arial.ttf");
+    sf::Text text("", font, 10);
     text.setColor(sf::Color::Black);
+    //text.setStyle(sf::Text::Bold);
     std::ostringstream hexagonLifesString;
     hexagonLifesString << lifes;
     text.setString(hexagonLifesString.str());
-    text.setPosition((float)x, (float)y);
+    text.setPosition((float)x + 2, (float)y + 2);
     window->draw(text);
 }

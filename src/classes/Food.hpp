@@ -2,7 +2,7 @@
 #define EVOLUTION_FOOD_HPP
 
 #include "Hexagon.hpp"
-#include </home/mariasolovyova/CLionProjects/Evolution/tools/json/single_include/nlohmann/json.hpp>
+#include </home/mariasolovyova/CLionProjects/untitled4/tools/json/single_include/nlohmann/json.hpp>
 
 using Json = nlohmann::json;
 
@@ -13,6 +13,7 @@ public:
     Food(const double xNew, const double yNew, const size_t CellStrNew, const size_t CellColNew, double Medicine = rand() % 5)
         :    Hexagon(Type::FOOD, xNew, yNew, CellStrNew, CellColNew)
     {
+        lifes = 40;
         medicine = Medicine;
     }
 
@@ -21,7 +22,7 @@ public:
 
     ~Food() = default;
 
-    void Print(sf::RenderWindow* window) const override
+    void Print(sf::RenderWindow* window) override
     {
         sf::CircleShape hexagon1(10, 6);
         hexagon1.setFillColor(sf::Color(93, 161, 48));
@@ -45,7 +46,7 @@ public:
     {}
     ~Water() = default;
 
-    void Print(sf::RenderWindow* window) const override
+    void Print(sf::RenderWindow* window) override
     {
         sf::CircleShape hexagon1(10, 6);
         hexagon1.setFillColor(sf::Color(66, 170, 255));
@@ -69,7 +70,7 @@ public:
     {}
     ~Poison() = default;
 
-    void Print(sf::RenderWindow* window) const override
+    void Print(sf::RenderWindow* window) override
     {
         sf::CircleShape hexagon1(10, 6);
         hexagon1.setFillColor(sf::Color(207, 66, 52));

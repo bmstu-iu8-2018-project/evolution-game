@@ -6,7 +6,7 @@
 #include "Hexagon.hpp"
 #include "Food.hpp"
 #include "Map.hpp"
-#include </home/mariasolovyova/CLionProjects/Evolution/tools/json/single_include/nlohmann/json.hpp>
+#include </home/mariasolovyova/CLionProjects/untitled4/tools/json/single_include/nlohmann/json.hpp>
 
 using Json = nlohmann::json;
 
@@ -21,8 +21,6 @@ public:
     Pixel(const double, const double, const size_t, const size_t, Brain);
     Pixel(const float xNew, const float yNew, const size_t CellStrNew,
           const size_t CellColNew, const double lifesNew, Brain brainNew);
-    Pixel(const float xNew, const float yNew, const size_t CellStrNew,
-          const size_t CellColNew, const double lifesNew, Brain brainNew, double medicineNew);
     Pixel(const Pixel& hex);
      ~Pixel() = default;
     Pixel& operator=(const Pixel&);
@@ -35,10 +33,11 @@ public:
     void SaveToFile(const std::string&) const;
 
     Brain GetBrain() const override;
-    unsigned int GetNumberOfLifeIterations() const;
+    unsigned int GetNumberOfLifeIterations() const override;
+    void SetNumberOfLifeIterations(unsigned int) override;
     void SetBrain(const Brain&) override;
     void ResetNumberOfLifeIterations() override;
-    void Print(sf::RenderWindow*) const override;
+    void Print(sf::RenderWindow*) override;
 };
 
 #endif

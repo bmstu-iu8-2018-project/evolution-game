@@ -1,5 +1,7 @@
 #include "Evolution.hpp"
 
+bool flag;
+
 //  boost::recursive_mutex mutex;
 
 Evolution::Evolution()
@@ -23,6 +25,32 @@ Evolution::Evolution(Evolution&& ev)
      window.create(sf::VideoMode(ev.map.GetWidth(), ev.map.GetHeight()), "Evolution");
 }
 
+/*void Evolution::CatchingEvents()
+{
+    while (window.isOpen())
+    {
+        sf::Event event;
+        while (window.pollEvent(event))
+        {
+            if (event.type == sf::Event::Closed || keyboard.isPressed(sf::Keyboard::Escape))
+                window.close();
+            else if (event.type == sf::Event::KeyPressed)
+                keyboard.press(event.key.code);
+            else if (event.type == sf::Event::KeyReleased)
+                keyboard.release(event.key.code);
+            else if (keyboard.isPressed(sf::Keyboard::S))
+            {
+                map.SaveToFile();
+                //  window.close();
+            }
+            else if (keyboard.isPressed(sf::Keyboard::U))
+            {
+                map.UploadFromFile();
+            }
+            window.clear();
+        }
+    }
+}*/
 
 void Evolution::Statistics()
 {
@@ -38,19 +66,30 @@ void Evolution::Statistics()
         boost::filesystem::create_directory(path);
     std::string path_to_file = path.string() + "/Statistics";
     std::fstream fl(path_to_file, std::ios::app);
-    fl << map.GetEvolutionNumber() << " " << statisticsOfLifeIt << std::endl;
+    fl << map.GetEvolutionNamber() << " " << statisticsOfLifeIt << std::endl;
     fl.close();
 }
 
 
 void Evolution::run()
 {
-    map.MultiplyPixels(10);
+    map.MultiplyPixels(20);
+    sf::CircleShape button = sf::CircleShape(20, 3);
+    button.setOutlineThickness(1);
+    button.setFillColor(sf::Color(169, 169, 169));
+    button.setOutlineColor(sf::Color::Red);
+    sf::CircleShape button2 = sf::CircleShape(20, 3);
+    button2.setOutlineThickness(1);
+    button2.setFillColor(sf::Color(169, 169, 169));
+    button2.setOutlineColor(sf::Color::Red);
+    button2.setRotation(180);
     //  threads.emplace_back(std::thread(&Evolution::CatchingEvents, this/*, std::ref(*this)*/));
     while(window.isOpen())
     {
+        if (map.GetEvolutionNamber() == 1 || map.GetEvolutionNamber() % 10 == 0)
+            map.SaveToFile();
         //for(size_t inner = 0; inner < 100; ++inner)
-        while(map.GetNumberOfAliveOrganisms() > 0)
+        while(map.GetNumberOfAliveOrganisms() > 10)
         {
             sf::Event event;
             while (window.pollEvent(event))
@@ -69,15 +108,40 @@ void Evolution::run()
                 else if (keyboard.isPressed(sf::Keyboard::U))
                 {
                     map.UploadFromFile();
+                }  else if (keyboard.isPressed(sf::Keyboard::W)) {
+                    map.IncreaseTimesToSleep(10);
+                    button.setFillColor(sf::Color::Green);
+                } else if (keyboard.isPressed(sf::Keyboard::E)) {
+                    if (map.GetTimeToSleep() >= 10) {
+                        map.DecreaseTimesToSleep(10);
+                    }
+                    button2.setFillColor(sf::Color::Green);
+                }
+                if (!(keyboard.isPressed(sf::Keyboard::W))) {
+                    button.setFillColor(sf::Color(169, 169, 169));
+                }
+                if (!(keyboard.isPressed(sf::Keyboard::E))) {
+                    if (map.GetTimeToSleep() > 0)
+                        button2.setFillColor(sf::Color(169, 169, 169));
                 }
                 window.clear();
             }
-            map.Print(&window);
-            map.Update();
-            //  threads.emplace_back(&Map::Update, map);
-            //  threads.emplace_back(&Map::Print, map);
+            flag = (map.GetTimeToSleep() > 10);
+            if (flag) {
+                map.Print(&window);
+                map.Update();
+            } else {
+                map.Update();
+            }
+
+            button.setPosition(0, 5);
+            button2.setPosition(40, 70);
+            window.draw(button);
+            window.draw(button2);
             window.display();
+
         }
+        map.SetStaticOrganisms(map.GetOrganisms());
         Statistics();
         map.IncreaseEvolutionNumber();
         map.RecreateMap(map.GetStaticOrganisms());

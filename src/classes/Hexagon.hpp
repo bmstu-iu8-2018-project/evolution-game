@@ -38,6 +38,7 @@ public:
     {}
 
     double GetX() const;
+    sf::Color GetColor() const;
     double GetY() const;
     size_t GetCellStr() const;
     size_t  GetCellCol() const;
@@ -49,8 +50,10 @@ public:
     virtual unsigned int GetNumberOfLifeIterations() const;
 
     virtual void SetBrain(const Brain&);
+    virtual void SetNumberOfLifeIterations(unsigned int);
     void SetX(double);
     void SetY(double);
+    void SetColor(sf::Color);
     void SetCellStr(size_t);
     void SetCellCol(size_t);
     void SetType(Type&);
@@ -59,7 +62,7 @@ public:
     virtual void ResetNumberOfLifeIterations();
     void ResetMedicine();
 
-    virtual void Print(sf::RenderWindow*) const;
+    virtual void Print(sf::RenderWindow*);
 
     bool IsAlive();
 
@@ -67,11 +70,13 @@ public:
 protected:
     double x;  // координата по х как номер ячейки
     double y;  // координата по у как номер ячейки
+    sf::CircleShape hexagon = sf::CircleShape(10, 6);
+    sf::Color color;
     size_t cellStr;
     size_t cellCol;
     Type type;
     double lifes;
-    double medicine;
+    double medicine;  // отрицательна если яд и положительна если лекарство
     bool isHealfy = true;
     int intrand(int a, int b)
     {
