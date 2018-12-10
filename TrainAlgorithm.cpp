@@ -11,13 +11,6 @@ double doublerand(double a, double b)
     return dis(e);
 }
 
-int intrand(int a, int b)
-{
-    static std::default_random_engine e;
-    static std::uniform_int_distribution<> dis(a, b);
-    return dis(e);
-}
-
 void TrainAlgorithm::CommonInitialization()
 {
     for (size_t innerOfLayers = 0; innerOfLayers < brain->Size(); innerOfLayers++)
@@ -73,7 +66,7 @@ void TrainAlgorithm::Train(Brain* brain1)
         size_t randomNeuron = rand() % (brain->GetLayer(randomLayer).size());
         size_t randomLink = rand() % (brain->GetLayer(randomLayer).at(randomNeuron)->GetNumOfLinks());
         Link* currentLink = brain->GetLayer(randomLayer).at(randomNeuron)->at(randomLink);
-        double randWeight = intrand(-100, 100) / 100000;
+        double randWeight = doublerand(-100, 100) / 100000;
         currentLink->UpdateWeight(randWeight);
     }
 }

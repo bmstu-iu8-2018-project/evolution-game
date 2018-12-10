@@ -9,6 +9,7 @@
 #include <boost/filesystem.hpp>
 #include <SFML/Graphics.hpp>
 #include "Hexagon.hpp"
+#include "Food.hpp"
 
 
 class Pixel;
@@ -34,19 +35,14 @@ public:
         row.push_back(hex);
     }
 
-    double getPositionX(size_t index)
-    {
-        return row[index]->GetX();
-    }
-
-    double getPositionY(size_t index)
-    {
-        return row[index]->GetY();
-    }
-
     void erase(size_t index)
     {
         row.erase(row.begin() + index);
+    }
+
+    void insert(Hexagon* hex, size_t index)
+    {
+        row.insert(row.begin() + index, hex);
     }
 
     std::vector<Hexagon*>::iterator begin()
@@ -54,10 +50,6 @@ public:
         return row.begin();
     }
 
-    void insert(Hexagon* hex, size_t index)
-    {
-        row.insert(row.begin() + index, hex);
-    }
     Hexagon* back()
     {
         return row.back();
@@ -68,8 +60,9 @@ public:
 class Map
 {
 public:
-    Map();
-    Map(const std::string&);
+    // Map();
+    Map(const int& widthCells = 94, const int& heightCells = 60);
+    Map(const std::string&, const int&);
     Map(const Map&);
     Map(Map&&);
     ~Map() = default;
@@ -82,47 +75,47 @@ public:
     void MultiplyPixels(int);
     void CreateFood(int);
     void SetPoison(int);
-    void RecreateMap(const std::vector<Hexagon*>&);
-    void ClonePixels(Map&, const std::vector<Hexagon*>&);
-    void IncreaseEvolutionNumber();
+    void RecreateMap(const std::vector<Pixel*>&);
+    void ClonePixels(Map&, const std::vector<Pixel*>&);
 
     unsigned int GetWidth() const;
     unsigned int GetHeight() const;
-    unsigned int GetEvolutionNamber() const;
-    int GetTimeToSleep() const;
 
     size_t GetWidthInCells() const;
     size_t GetHeightInCells() const;
 
-    std::vector<Hexagon*> GetOrganisms() const;
-    std::vector<Hexagon*> GetStaticOrganisms() const;
+    std::vector<Pixel*> GetOrganisms() const;
+    std::vector<Pixel*> GetStaticOrganisms() const;
     size_t GetNumberOfAliveOrganisms() const;
 
-    void SetStaticOrganisms(std::vector<Hexagon*>);
-    void SetOrganism(Hexagon*);
+    unsigned int GetEvolutionNumber() const;
+    void IncreaseEvolutionNumber();
+
+    int GetTimeToSleep() const;
+
+    Wall* GetWall() const;
+
     void IncreaseTimesToSleep(int);
     void DecreaseTimesToSleep(int);
-    void SetEvolutionNamber(unsigned int);
+
+    void SetEvolutionNumber(unsigned int);
+    void SetOrganism(Pixel*);
     void Swap(Hexagon*, Hexagon*);
     void SaveToFile() const;
-    void UploadFromFile();
-    void Print(sf::RenderWindow*);
+    void UploadFromFile(int);
+    void Print(sf::RenderWindow*) const;
+
 private:
-    unsigned int evolutionNumber = 1;
-    int timeToSleep = 0;
     static const unsigned int width = 2000;
     static const unsigned int height = 1000;
-    static const size_t widthInCells = 94;
-    static const size_t heightInCells = 60;
+    size_t widthInCells = 94;
+    size_t heightInCells = 60;
     std::vector<Row> map;
-    std::vector<Hexagon*> organisms;
-    std::vector<Hexagon*> staticOrganisms;
-    int intrand(int a, int b)
-    {
-        static std::default_random_engine e;
-        static std::uniform_int_distribution<> dis(a, b);
-        return dis(e);
-    }
+    std::vector<Pixel*> organisms;
+    std::vector<Pixel*> staticOrganisms;
+    int evolutionNumber = 1;
+    int timeToSleep = 10;
+    Wall* wall;
 };
 
 #endif

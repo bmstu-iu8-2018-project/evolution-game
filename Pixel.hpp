@@ -16,28 +16,27 @@ class Pixel
     Brain brain;
     unsigned int numberOfLifeIterations;
 public:
-    Pixel();
+    explicit Pixel();
     Pixel(const double, const double, const size_t, const size_t);
     Pixel(const double, const double, const size_t, const size_t, Brain);
     Pixel(const float xNew, const float yNew, const size_t CellStrNew,
           const size_t CellColNew, const double lifesNew, Brain brainNew);
-    Pixel(const Pixel& hex);
+    Pixel(const float xNew, const float yNew, const size_t CellStrNew,
+          const size_t CellColNew, const double lifesNew, Brain brainNew, double medicineNew);
+    Pixel(const Pixel&);
      ~Pixel() = default;
-    Pixel& operator=(const Pixel&);
-    std::vector<Hexagon*> LookArond(Map&) const;
+    std::vector<Hexagon*> LookAround(Map&) const;
     void Update(Map&);
     void EatingFood(Hexagon*, Map&);
     void Move(Map&, Hexagon*);
     void Reproduction(Map&);
     Hexagon* ViewNearbyCells(Map&, const Type&);
+    unsigned int GetNumberOfLifeIterations() const;
+    const Brain& GetBrain() const;
+    void SetBrain(const Brain&);
+    void ResetNumberOfLifeIterations();
     void SaveToFile(const std::string&) const;
-
-    Brain GetBrain() const override;
-    unsigned int GetNumberOfLifeIterations() const override;
-    void SetNumberOfLifeIterations(unsigned int) override;
-    void SetBrain(const Brain&) override;
-    void ResetNumberOfLifeIterations() override;
-    void Print(sf::RenderWindow*) override;
+    void Print(sf::RenderWindow*) const override;
 };
 
 #endif

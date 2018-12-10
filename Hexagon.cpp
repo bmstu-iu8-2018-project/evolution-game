@@ -46,9 +46,9 @@ double Hexagon::GetY() const
     return y;
 }
 
-sf::Color Hexagon::GetColor() const
+bool Hexagon::GetisHealfy() const
 {
-    return color;
+    return isHealfy;
 }
 
 size_t Hexagon::GetCellStr() const
@@ -59,11 +59,6 @@ size_t Hexagon::GetCellStr() const
 size_t  Hexagon::GetCellCol() const
 {
     return cellCol;
-}
-
-bool Hexagon::GetisHealfy() const
-{
-    return isHealfy;
 }
 
 Hexagon::Type Hexagon::GetType() const
@@ -80,18 +75,6 @@ double Hexagon::GetMedicine() const
 {
     return medicine;
 }
-
-Brain Hexagon::GetBrain() const
-{}
-
-unsigned int Hexagon::GetNumberOfLifeIterations() const
-{}
-
-void Hexagon::SetNumberOfLifeIterations(unsigned int num)
-{}
-
-void Hexagon::ResetNumberOfLifeIterations()
-{}
 
 void Hexagon::SetX(double newX)
 {
@@ -113,8 +96,6 @@ void  Hexagon::SetCellCol(size_t newCellCol)
     cellCol = newCellCol;
 }
 
-void Hexagon::SetBrain(const Brain&)
-{}
 
 void Hexagon::SetType(Type& typeNew)
 {
@@ -131,11 +112,6 @@ void Hexagon::SetMedicine(double newMedicine)
     medicine = newMedicine;
 }
 
-void Hexagon::SetColor(sf::Color newColor)
-{
-    color = newColor;
-}
-
 void Hexagon::ResetMedicine()
 {
     medicine = 0;
@@ -146,7 +122,7 @@ bool Hexagon::IsAlive()
     return lifes > 0;
 }
 
-void Hexagon::Print(sf::RenderWindow*)
+void Hexagon::Print(sf::RenderWindow*) const
 {}
 
 void Hexagon::SaveToFile(const std::string& path_to_file) const

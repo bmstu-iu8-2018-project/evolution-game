@@ -11,18 +11,14 @@ class Food
 {
 public:
     Food(const double xNew, const double yNew, const size_t CellStrNew, const size_t CellColNew, double Medicine = rand() % 5)
-        :    Hexagon(Type::FOOD, xNew, yNew, CellStrNew, CellColNew)
+            :    Hexagon(Type::FOOD, xNew, yNew, CellStrNew, CellColNew)
     {
-        lifes = 40;
         medicine = Medicine;
     }
 
-    void Update(Map&) override
-    {}
-
     ~Food() = default;
 
-    void Print(sf::RenderWindow* window) override
+    void Print(sf::RenderWindow* window) const override
     {
         sf::CircleShape hexagon1(10, 6);
         hexagon1.setFillColor(sf::Color(93, 161, 48));
@@ -42,11 +38,10 @@ public:
     {
         medicine = 0;
     }
-    void Update(Map& map) override
-    {}
+
     ~Water() = default;
 
-    void Print(sf::RenderWindow* window) override
+    void Print(sf::RenderWindow* window) const override
     {
         sf::CircleShape hexagon1(10, 6);
         hexagon1.setFillColor(sf::Color(66, 170, 255));
@@ -66,11 +61,9 @@ public:
     {
         medicine = Medicine;
     }
-    void Update(Map& map) override
-    {}
     ~Poison() = default;
 
-    void Print(sf::RenderWindow* window) override
+    void Print(sf::RenderWindow* window) const override
     {
         sf::CircleShape hexagon1(10, 6);
         hexagon1.setFillColor(sf::Color(207, 66, 52));
@@ -78,6 +71,18 @@ public:
         hexagon1.setOutlineColor(sf::Color::Black);
         hexagon1.setPosition(x, y);
         window->draw(hexagon1);
+    }
+};
+
+class Wall
+        : public Hexagon
+{
+public:
+    Wall()
+            :    Hexagon(Type::WALL, 0, 0, 0, 0)
+    {
+        medicine = 0;
+        lifes = 0;
     }
 };
 

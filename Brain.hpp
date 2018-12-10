@@ -6,8 +6,8 @@
 #include <fstream>
 #include <map>
 #include <iostream>
-#include <string>
 #include <random>
+#include <string>
 
 #include "NeuronCreator.hpp"
 #include "TrainAlgorithm.hpp"
@@ -22,8 +22,9 @@ class TrainAlgorithm;
 class Brain
 {
 public:
-    explicit Brain(const size_t &inInputs = 10, const size_t &inOutputs = 7, const size_t &inNumOfHiddenLayers = 2,
-                  const size_t &inNumOfNeuronsInHiddenLayers = 10);
+
+    Brain(const size_t &inInputs = 10, const size_t &inOutputs = 7, const size_t &inNumOfHiddenLayers = 2,
+          const size_t &inNumOfNeuronsInHiddenLayers = 10);
     Brain(const Json&);
     ~Brain() = default;
     Brain& operator=(const Brain&);
@@ -41,15 +42,15 @@ public:
 
     void ResetWeights() const;
 
-    const std::vector<bool> CreateVectorInput(const std::vector<Hexagon*>&) const;
+    const std::vector<double> CreateVectorInput(const std::vector<Hexagon*>&) const;
 
-    double Think(const std::vector<Hexagon*>&) const;
+    double Think(const std::vector<Hexagon*>& surroundingObjects3, std::vector<double>& values, int diff = 0) const;
 
     Hexagon* GetSolution(const std::vector<Hexagon*>&) const;
 
     void SaveNetworkState(const std::string&) const;
 
-    void UploadNetworkState(const std::string&);
+    void UpdateStateOfLife(double);
 
 private:
     NeuronCreator* neuronCreator;
@@ -58,7 +59,7 @@ private:
     size_t inputs;
     size_t outputs;
     size_t hidden;
-
+    double stateOfLife;
     int intrand(int a, int b) const
     {
         static std::default_random_engine e;
@@ -66,5 +67,4 @@ private:
         return dis(e);
     }
 };
-
 #endif

@@ -5,12 +5,14 @@
 
 #include <cmath>
 #include <SFML/Graphics/CircleShape.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
 
-class Button {
+class Button
+{
 public:
     Button() = default;
     ~Button() = default;
-    Button(const double& x, const double& y);
+    Button(const float&, const float&, const float&);
 
     double GetX();
     double GetY();
@@ -22,10 +24,12 @@ public:
     void SetX(double newX);
     void SetY(double newY);
 
+    void Print(sf::RenderWindow* window);
+
 private:
-    sf::CircleShape button = sf::CircleShape(20, 3);
-    double X;
-    double Y;
+    sf::CircleShape button;
+    float X;
+    float Y;
     sf::Color Color;
     float Rotation;
 };
