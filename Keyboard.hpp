@@ -1,8 +1,6 @@
 #ifndef KEYBOARD_HPP
 #define KEYBOARD_HPP
 
-//  #pragma once
-
 #include <map>
 #include <SFML/Graphics.hpp>
 

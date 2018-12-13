@@ -1,13 +1,13 @@
 #include "Map.hpp"
-#include "Food.hpp"
 #include </home/anastasia/CLionProjects/evolution/tools/json-develop/single_include/nlohmann/json.hpp>
+#include <random>
 #include "Pixel.hpp"
+#include <iomanip>
 
 using Json = nlohmann::json;
 
-Map::Map(const int& widthCells, const int& heightCells)  //  Конструктор создает поле, состоящее из воды
+Map::Map(size_t widthCells, size_t heightCells)
 {
-    std::srand(std::time(nullptr));
     widthInCells = widthCells;
     heightInCells = heightCells;
     double deltaX = 9;
@@ -36,21 +36,22 @@ Map::Map(const int& widthCells, const int& heightCells)  //  Конструкт�
 }
 
 Map::Map(const Map& mapToCopy)
-    :    map(mapToCopy.map),
-         organisms(mapToCopy.organisms),
-         staticOrganisms(mapToCopy.staticOrganisms),
-         evolutionNumber(mapToCopy.evolutionNumber),
-         widthInCells(mapToCopy.widthInCells),
-         heightInCells(mapToCopy.heightInCells)
+        :    widthInCells(mapToCopy.widthInCells),
+             heightInCells(mapToCopy.heightInCells),
+             map(mapToCopy.map),
+             organisms(mapToCopy.organisms),
+             staticOrganisms(mapToCopy.staticOrganisms),
+             evolutionNumber(mapToCopy.evolutionNumber)
+
 {}
 
 Map::Map(Map&& mapToMove)
-    :    map(mapToMove.map),
-         organisms(mapToMove.organisms),
-         staticOrganisms(std::move(mapToMove.staticOrganisms)),
-         evolutionNumber(std::move(mapToMove.evolutionNumber)),
-         widthInCells(std::move(mapToMove.widthInCells)),
-         heightInCells(std::move(mapToMove.heightInCells))
+        :    widthInCells(mapToMove.widthInCells),
+             heightInCells(mapToMove.heightInCells),
+             map(mapToMove.map),
+             organisms(mapToMove.organisms),
+             staticOrganisms(std::move(mapToMove.staticOrganisms)),
+             evolutionNumber(mapToMove.evolutionNumber)
 {}
 
 void Map::MultiplyPixels(int numberOfPixels)
@@ -114,11 +115,39 @@ void Map::SetPoison(int numberOfPoison)
     }
 }
 
+bool Difference(Pixel* a, Pixel* b)
+{
+    return (a->GetHowMuchFoodAte() - a->GetHowMuchPoisonAte()) >
+    (b->GetHowMuchFoodAte() - b->GetHowMuchPoisonAte());
+}
+
+std::vector<Pixel*> Map::Selection(const std::vector<Pixel*>& org)
+{
+    std::vector<Pixel*> copyOrg = org;
+    for (int i = (int)copyOrg.size() - 1; i >= 0; --i)
+    {
+        if (copyOrg[i]->GetHowMuchFoodAte() < copyOrg[i]->GetHowMuchPoisonAte())
+            copyOrg.erase(copyOrg.begin() + i);
+    }
+    if (copyOrg.size() > 10)
+    {
+        std::sort(copyOrg.begin(), copyOrg.end(), Difference);
+        for (int i = (int)copyOrg.size() - 10; i >= 0; --i)
+        {
+            copyOrg.erase(copyOrg.begin() + i);
+        }
+    }
+    return copyOrg;
+}
+
 void Map::RecreateMap(const std::vector<Pixel*>& vectorOfNewOrganisms)
 {
-    Map mapNew(widthInCells, heightInCells);
-    mapNew.SetEvolutionNumber(GetEvolutionNumber());
-    ClonePixels(mapNew, vectorOfNewOrganisms);
+    Map mapNew;
+    std::vector<Pixel*> smartestOrganisms = Selection(vectorOfNewOrganisms);
+    mapNew.evolutionNumber = evolutionNumber;
+    mapNew.widthInCells = widthInCells;
+    mapNew.heightInCells = heightInCells;
+    ClonePixels(mapNew, smartestOrganisms);
     *this = mapNew;
 
 }
@@ -126,13 +155,19 @@ void Map::RecreateMap(const std::vector<Pixel*>& vectorOfNewOrganisms)
 void Map::ClonePixels(Map& mapNew, const std::vector<Pixel*>& vectorOfNewOrganisms)
 {
     std::srand(std::time(nullptr));
-    mapNew.organisms.clear();
     mapNew.organisms = vectorOfNewOrganisms;
     for (size_t innerOfOrganisms = 0; innerOfOrganisms < vectorOfNewOrganisms.size(); innerOfOrganisms++)
     {
+        size_t x = rand() % (heightInCells - 1);
+        size_t y = rand() % (widthInCells - 1);
         mapNew.organisms[innerOfOrganisms]->SetLifes(99);
         mapNew.organisms[innerOfOrganisms]->ResetNumberOfLifeIterations();
         mapNew.organisms[innerOfOrganisms]->ResetMedicine();
+        mapNew.organisms[innerOfOrganisms]->SetCellStr(x);
+        mapNew.organisms[innerOfOrganisms]->SetCellCol(y);
+        mapNew.organisms[innerOfOrganisms]->SetX(map[x][y]->GetX());
+        mapNew.organisms[innerOfOrganisms]->SetY(map[x][y]->GetY());
+        mapNew.organisms[innerOfOrganisms]->SetHealth(true);
         mapNew.SetOrganism(mapNew.organisms[innerOfOrganisms]);
         bool flag = false;
         while (!flag)
@@ -152,11 +187,12 @@ void Map::ClonePixels(Map& mapNew, const std::vector<Pixel*>& vectorOfNewOrganis
     }
 }
 
-Map::Map(const std::string& path, const int& numberOfEvolution)
+Map::Map(const std::string& path, int numberOfEvolution, size_t newWidth, size_t newHeight)
 {
     boost::filesystem::path path_to_file = path + "/" + "Map " + std::to_string(numberOfEvolution);
     if (!boost::filesystem::exists(path_to_file))
         throw std::runtime_error("Error in uploading files");
+    *this = Map(newWidth, newHeight);
     std::ifstream file(path_to_file.string());
     std::string str;
     str.clear();
@@ -166,47 +202,42 @@ Map::Map(const std::string& path, const int& numberOfEvolution)
     file.close();
     Json object = Json::parse(str);
     evolutionNumber = object["Evolution"];
-    for (auto& s : object["Static Pixels"])
+    size_t cellStr1 = 0;
+    size_t cellCol1 = 0;
+    double x1 = 0;
+    double y1 = 0;
+    size_t cellStr2 = 0;
+    size_t cellCol2 = 0;
+    double x2 = 0;
+    double y2 = 0;
+    double medicine;
+    double lifes;
+    for (auto& s : object["Static Organisms"])
     {
-        auto cellStr = static_cast<size_t>(s["cellStr"]);
-        auto cellCol = static_cast<size_t>(s["cellCol"]);
-        auto x = static_cast<double>(s["x"]);
-        auto y = static_cast<double>(s["y"]);
-        auto medicine = static_cast<double>(s["medicine"]);
-        auto lifes = static_cast<double>(s["lifes"]);
-        staticOrganisms.push_back(new Pixel(x, y, cellStr, cellCol, lifes, Brain(s), medicine));
+        cellStr1 = rand() % (heightInCells - 1);
+        cellCol1 = rand() % (widthInCells - 1);
+        x1 = map[cellStr1][cellCol1]->GetX();
+        y1 = map[cellStr1][cellCol1]->GetY();
+        medicine = static_cast<double>(s["Medicine"]);
+        lifes = static_cast<double>(s["Lifes"]);
+        staticOrganisms.push_back(new Pixel(x1, y1, cellStr1, cellCol1, lifes, Brain(s), medicine));
+        SetOrganism(staticOrganisms.back());
     }
-    for (auto& m : object["Map"])
+    for (auto& s : object["Organisms"])
     {
-        Row row;
-        map.push_back(row);
-        for (auto& obj : m)
+        cellStr2 = rand() % (heightInCells - 1);
+        cellCol2 = rand() % (widthInCells - 1);
+        if (map[cellStr2][cellCol2]->GetType() == Hexagon::Type::PIXEL)
         {
-            auto cellStr = static_cast<size_t >(obj["cellStr"]);
-            auto cellCol = static_cast<size_t>(obj["cellCol"]);
-            auto x = static_cast<double>(obj["x"]);
-            auto y = static_cast<double>(obj["y"]);
-            auto medicine = static_cast<double>(obj["medicine"]);
-            if (obj["type"] == 1)
-            {
-                map[cellStr].push_back(new Food(x, y, cellStr, cellCol, medicine));
-            }
-            else if (obj["type"] == 2)
-            {
-                map[cellStr].push_back(new Water(x, y, cellStr, cellCol));
-            }
-            else if (obj["type"] == 3)
-            {
-                map[cellStr].push_back(new Poison(x, y, cellStr, cellCol, medicine));
-            }
-            else if (obj["type"] == 4)
-            {
-                auto lifes = static_cast<double>(obj["lifes"]);
-                Pixel* hex = new Pixel(x, y, cellStr, cellCol, lifes, Brain(obj), medicine);
-                map[cellStr].push_back(hex);
-                organisms.push_back(hex);
-            }
+            cellStr2 = rand() % (heightInCells - 1);
+            cellCol2 = rand() % (widthInCells - 1);
         }
+        x2  = map[cellStr2][cellCol2]->GetX();
+        y2  = map[cellStr2][cellCol2]->GetY();
+        medicine = static_cast<double>(s["Medicine"]);
+        lifes = static_cast<double>(s["Lifes"]);
+        organisms.push_back(new Pixel(x2, y2, cellStr2, cellCol2, lifes, Brain(s), medicine));
+        SetOrganism(organisms.back());
     }
 }
 
@@ -229,19 +260,19 @@ Map& Map::operator=(Map&& mapOld)
     map = std::move(mapOld.map);
     organisms = std::move(mapOld.organisms);
     staticOrganisms = std::move(mapOld.staticOrganisms);
-    evolutionNumber = std::move(mapOld.evolutionNumber);
-    widthInCells = std::move(mapOld.widthInCells);
-    heightInCells = std::move(mapOld.heightInCells);
+    evolutionNumber = mapOld.evolutionNumber;
+    widthInCells = mapOld.widthInCells;
+    heightInCells = mapOld.heightInCells;
     return *this;
 }
 
 void Map::Update()
 {
-    for (int i = organisms.size() -  1; i >= 0; --i)
+    for (int i = (int)organisms.size() -  1; i >= 0; --i)
     {
         if (organisms[i]->IsAlive())
             organisms[i]->Update(*this);
-        else if (!organisms[i]->IsAlive() && organisms.size() > 10)
+        else if (!organisms[i]->IsAlive())
         {
             map[organisms[i]->GetCellStr()].erase(organisms[i]->GetCellCol());
             if (!organisms[i]->GetisHealfy())
@@ -254,6 +285,7 @@ void Map::Update()
                 map[organisms[i]->GetCellStr()].insert(new Food(organisms[i]->GetX(), organisms[i]->GetY(), organisms[i]->GetCellStr(), organisms[i]->GetCellCol()),
                                                        organisms[i]->GetCellCol());
             }
+            staticOrganisms.push_back(organisms[i]);
             organisms.erase(organisms.begin() + i);
         }
         else
@@ -270,6 +302,7 @@ void Map::Update()
                 map[organisms[i]->GetCellStr()].insert(new Food(organisms[i]->GetX(), organisms[i]->GetY(), organisms[i]->GetCellStr(), organisms[i]->GetCellCol()),
                                                        organisms[i]->GetCellCol());
             }
+            staticOrganisms.push_back(organisms[i]);
             organisms.erase(organisms.begin() + i);
         }
     }
@@ -284,7 +317,6 @@ const Row& Map::operator[](size_t index) const
 {
     return map[index];
 }
-
 
 unsigned int Map::GetWidth() const
 {
@@ -306,6 +338,16 @@ size_t Map::GetHeightInCells() const
     return heightInCells;
 }
 
+void Map::SetHeightInCells(size_t newHeight)
+{
+    heightInCells = newHeight;
+}
+
+void Map::SetWidthInCells(size_t newWidth)
+{
+    widthInCells = newWidth;
+}
+
 std::vector<Pixel*> Map::GetOrganisms() const
 {
     return organisms;
@@ -316,11 +358,6 @@ std::vector<Pixel*> Map::GetStaticOrganisms() const
     return staticOrganisms;
 }
 
-Wall* Map::GetWall() const
-{
-    return wall;
-}
-
 size_t Map::GetNumberOfAliveOrganisms() const
 {
     return organisms.size();
@@ -329,11 +366,6 @@ size_t Map::GetNumberOfAliveOrganisms() const
 unsigned int Map::GetEvolutionNumber() const
 {
     return evolutionNumber;
-}
-
-void Map::SetEvolutionNumber(unsigned int evNum)
-{
-    evolutionNumber = evNum;
 }
 
 void Map::IncreaseEvolutionNumber()
@@ -354,6 +386,11 @@ void Map::IncreaseTimesToSleep(int x)
 void Map::DecreaseTimesToSleep(int x)
 {
     timeToSleep -= x;
+}
+
+Wall* Map::GetWall() const
+{
+    return wall;
 }
 
 void Map::SetOrganism(Pixel* org)
@@ -388,51 +425,28 @@ void Map::SaveToFile() const
         boost::filesystem::create_directory(path);
     std::string path_to_file = path.string() + "/Map " + std::to_string(evolutionNumber);
     std::fstream file(path_to_file, std::ios::app);
-    file << "{" << std::endl;
-    file << "\t\"Evolution\" : " << evolutionNumber << ","<< std::endl;
-    file << "\t\"Static Pixels\" : [" << std::endl;
-    for (auto& p : staticOrganisms)
-    {
-        file << "\t\t{" << std::endl;
-        p->SaveToFile(path_to_file);
-        file << "\t\t}";
-        if (staticOrganisms.back() != p)
-            file << ",";
-        file << std::endl;
-    }
-    file << "\t]," << std::endl;
-    file << "\t\"Map\" : " << std::endl;
-    file << "\t[" << std::endl;
-    for (size_t i = 0; i < heightInCells; ++i)
-    {
-        file << "\t\t[" << std::endl;
-        for (size_t j = 0; j < widthInCells; ++j)
-        {
-            file << "\t\t\t{" << std::endl;
-            map[i][j]->SaveToFile(path_to_file);
-            file << "\t\t\t}";
-            if (j != widthInCells - 1)
-                file << ",";
-            file << std::endl;
-        }
-        file << "\t\t]";
-        if (i != heightInCells - 1)
-            file << ",";
-        file << std::endl;
-    }
-    file << "\t]" << std::endl;
-    file << "}" << std::endl;
-    file.close();
+    Json j;
+    j["Evolution"] = evolutionNumber;
+    Json jj;
+    jj.clear();
+    for (auto& s : staticOrganisms)
+        jj.push_back(s->getJson());
+    j["Static Organisms"] = jj;
+    jj.clear();
+    for (auto& s : organisms)
+        jj.push_back(s->getJson());
+    j["Organisms"] = jj;
+    file << std::setw(4) << j;
 }
 
 
-void Map::UploadFromFile(int numberOfEvolution)
+void Map::UploadFromFile(int numberOfEvolution, size_t newWidth, size_t newHeight)
 {
     boost::filesystem::path path = boost::filesystem::current_path().parent_path();
     path += "/recordsNew";
     if(!boost::filesystem::exists(path))
         throw std::runtime_error("UploadFromFile : can't file directory to load from");
-    *this = Map(path.string(),numberOfEvolution);
+    *this = Map(path.string(), numberOfEvolution, newWidth, newHeight);
 }
 
 void Map::Print(sf::RenderWindow* window) const
@@ -449,7 +463,7 @@ void Map::Print(sf::RenderWindow* window) const
     font.loadFromFile("/home/anastasia/CLionProjects/evolution/include/Arial.ttf");
     sf::Text text("", font, 25);
     text.setColor(sf::Color::Red);
-    text.setString("Number of evolution: " + std::to_string(evolutionNumber));
+    text.setString("Number of evolution : " + std::to_string(evolutionNumber));
     text.setPosition(100, 0);
     window->draw(text);
     std::this_thread::sleep_for(std::chrono::milliseconds(GetTimeToSleep()));

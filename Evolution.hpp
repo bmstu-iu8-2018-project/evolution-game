@@ -1,8 +1,9 @@
 #ifndef EVOLUTION_HPP
 #define EVOLUTION_HPP
 
-#include <SFML/Window.hpp>
 #include <thread>
+
+#include <SFML/Window.hpp>
 
 #include "Keyboard.hpp"
 #include "Map.hpp"
@@ -12,7 +13,7 @@
 class Evolution
 {
     Map map;
-    sf::RenderWindow window;                   // std::shared_ptr<sf::RenderWindow> window; // может так?
+    sf::RenderWindow window;
     Keyboard keyboard;
     Button buttonIncrease;
     Button buttonDecrease;
@@ -24,7 +25,6 @@ public:
     void run();
     void Statistics();
     void Menu();
-    void CatchingEvents();
 };
 
 #endif

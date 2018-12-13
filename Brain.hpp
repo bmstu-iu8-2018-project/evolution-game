@@ -2,15 +2,15 @@
 #define NEURALNETWORK_HPP_
 
 #include <algorithm>
-#include <ctime>
 #include <fstream>
-#include <map>
 #include <iostream>
-#include <random>
 #include <string>
+#include <vector>
+#include <random>
 
 #include "NeuronCreator.hpp"
 #include "TrainAlgorithm.hpp"
+
 #include </home/anastasia/CLionProjects/evolution/tools/json-develop/single_include/nlohmann/json.hpp>
 
 using Json = nlohmann::json;
@@ -24,7 +24,7 @@ class Brain
 public:
 
     Brain(const size_t &inInputs = 10, const size_t &inOutputs = 7, const size_t &inNumOfHiddenLayers = 2,
-          const size_t &inNumOfNeuronsInHiddenLayers = 10);
+                  const size_t &inNumOfNeuronsInHiddenLayers = 10);
     Brain(const Json&);
     ~Brain() = default;
     Brain& operator=(const Brain&);
@@ -44,13 +44,13 @@ public:
 
     const std::vector<double> CreateVectorInput(const std::vector<Hexagon*>&) const;
 
-    double Think(const std::vector<Hexagon*>& surroundingObjects3, std::vector<double>& values, int diff = 0) const;
+    double Think(const std::vector<Hexagon*>&, std::vector<double>&, int) const;
 
     Hexagon* GetSolution(const std::vector<Hexagon*>&) const;
 
-    void SaveNetworkState(const std::string&) const;
-
     void UpdateStateOfLife(double);
+
+    const Json getJson() const;
 
 private:
     NeuronCreator* neuronCreator;
@@ -67,4 +67,5 @@ private:
         return dis(e);
     }
 };
+
 #endif

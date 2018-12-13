@@ -1,6 +1,6 @@
 #include "Button.hpp"
 
-Button::Button(const float& x, const float& y, const float& rotation)
+Button::Button(const float x, const float y, const float rotation)
     :   X(x),
         Y(y),
         button(sf::CircleShape(20, 3))

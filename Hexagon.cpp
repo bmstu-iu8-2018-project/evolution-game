@@ -2,23 +2,13 @@
 #include "Map.hpp"
 
 
-Hexagon::Hexagon(const Type& type1, double xNew, double yNew, size_t cellStrNew, size_t cellColNew)
+Hexagon::Hexagon(const Type type1, double xNew, double yNew, size_t cellStrNew, size_t cellColNew)
         :    type(type1),
              x(xNew),
              y(yNew),
              cellStr(cellStrNew),
              cellCol(cellColNew),
-             lifes(99)
-{}
-
-Hexagon::Hexagon(const Type& type1, const float xNew, const float yNew, const size_t cellStrNew,
-                 const size_t cellColNew, const double lifesNew)
-        :    type(type1),
-             x(xNew),
-             y(yNew),
-             cellStr(cellStrNew),
-             cellCol(cellColNew),
-             lifes(lifesNew)
+             lifes(40)
 {}
 
 Hexagon& Hexagon::operator=(const Hexagon* hex)
@@ -46,11 +36,6 @@ double Hexagon::GetY() const
     return y;
 }
 
-bool Hexagon::GetisHealfy() const
-{
-    return isHealfy;
-}
-
 size_t Hexagon::GetCellStr() const
 {
     return cellStr;
@@ -74,6 +59,11 @@ double Hexagon::GetLifes() const
 double Hexagon::GetMedicine() const
 {
     return medicine;
+}
+
+bool Hexagon::GetisHealfy() const
+{
+    return isHealfy;
 }
 
 void Hexagon::SetX(double newX)
@@ -112,6 +102,7 @@ void Hexagon::SetMedicine(double newMedicine)
     medicine = newMedicine;
 }
 
+
 void Hexagon::ResetMedicine()
 {
     medicine = 0;
@@ -125,15 +116,3 @@ bool Hexagon::IsAlive()
 void Hexagon::Print(sf::RenderWindow*) const
 {}
 
-void Hexagon::SaveToFile(const std::string& path_to_file) const
-{
-    std::fstream fl(path_to_file, std::ios::app);
-    fl << "\t\t\t\t" << "\"cellStr\"" << " : " << cellStr << "," << std::endl;
-    fl << "\t\t\t\t" << "\"cellCol\"" << " : " << cellCol << "," << std::endl;
-    fl << "\t\t\t\t" << "\"x\"" << " : " << x << "," << std::endl;
-    fl << "\t\t\t\t" << "\"y\"" << " : " << y << "," << std::endl;
-    fl << "\t\t\t\t" << "\"type\"" << " : " << type << "," << std::endl;
-    fl << "\t\t\t\t" << "\"medicine\"" << " : " << medicine << "," << std::endl;
-    fl << "\t\t\t\t" << "\"isHealfy\"" << " : " << isHealfy << std::endl;
-    fl.close();
-}

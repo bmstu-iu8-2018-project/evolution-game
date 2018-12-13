@@ -4,56 +4,56 @@
 
 Brain::Brain(const size_t& inInputs, const size_t& inOutputs, const size_t& inNumOfHiddenLayers, const size_t& inNumOfNeuronsInHiddenLayers)
 {
-    if(inInputs > 0 || inOutputs > 0)
-    {
-        inputs = inInputs;
-        outputs = inOutputs;
-        hidden  = inNumOfNeuronsInHiddenLayers;
+	if(inInputs > 0 || inOutputs > 0)
+	{
+		inputs = inInputs;
+		outputs = inOutputs;
+		hidden  = inNumOfNeuronsInHiddenLayers;
 
         stateOfLife = 99;
         NetworkFunction* InputNeuronsFunc = new Sigmoid;
-        NetworkFunction* OutputNeuronsFunc = new Sigmoid;
+		NetworkFunction* OutputNeuronsFunc = new Sigmoid;
 
         std::vector<Neuron*> inputLayer;
         std::vector<Neuron*> outputLayer;
         neuronCreator = new PerceptronNeuronCreator;
         algorithm = new TrainAlgorithm(this);
 
-        for (size_t inner = 0; inner < inOutputs; inner++)
-            outputLayer.push_back(neuronCreator->CreateOutputNeuron(OutputNeuronsFunc));
-        layers.push_back(outputLayer);
+		for (size_t inner = 0; inner < inOutputs; inner++)
+			outputLayer.push_back(neuronCreator->CreateOutputNeuron(OutputNeuronsFunc));
+		layers.push_back(outputLayer);
 
-        for (size_t inner = 0; inner < inNumOfHiddenLayers; inner++)
-        {
-            std::vector<Neuron*> HiddenLayer;
-            for (size_t j = 0; j < inNumOfNeuronsInHiddenLayers; j++)
-            {
-                Neuron* hiddenneuron = neuronCreator->CreateHiddenNeuron(layers[0], OutputNeuronsFunc);
-                HiddenLayer.push_back(hiddenneuron);
-            }
-            layers.insert(layers.begin(),HiddenLayer);
-        }
+		for (size_t inner = 0; inner < inNumOfHiddenLayers; inner++)
+		{
+			std::vector<Neuron*> HiddenLayer;
+			for (size_t j = 0; j < inNumOfNeuronsInHiddenLayers; j++)
+			{
+				Neuron* hiddenneuron = neuronCreator->CreateHiddenNeuron(layers[0], OutputNeuronsFunc);
+				HiddenLayer.push_back(hiddenneuron);
+			}
+			layers.insert(layers.begin(),HiddenLayer);
+		}
 
-        for (size_t inner = 0; inner < inInputs; inner++)
-        {
-            inputLayer.push_back(neuronCreator->CreateInputNeuron(layers[0], InputNeuronsFunc));
-        }
-        layers.insert(layers.begin(),inputLayer);
-        algorithm->WeightsInitialization();
-    }
-    else
-    {
+		for (size_t inner = 0; inner < inInputs; inner++)
+		{
+			inputLayer.push_back(neuronCreator->CreateInputNeuron(layers[0], InputNeuronsFunc));
+		}
+		layers.insert(layers.begin(),inputLayer);
+		algorithm->WeightsInitialization();
+	}
+	else
+	{
         throw std::logic_error("Error in Brain constructor:"
                                "The number of input and output neurons has to be more than 0");
-    }
+	}
 }
 
 Brain::Brain(const Json& object)
 {
-    Json newObject = object["brain"]["layers"];
-    inputs = static_cast<size_t>(object["brain"]["inputs"]);
-    outputs = static_cast<size_t>(object["brain"]["outputs"]);
-    hidden = static_cast<size_t>(object["brain"]["hidden"]);
+    Json newObject = object["Brain"]["Layers"];
+    inputs = static_cast<size_t>(object["Brain"]["Inputs"]);
+    outputs = static_cast<size_t>(object["Brain"]["Outputs"]);
+    hidden = static_cast<size_t>(object["Brain"]["Hidden"]);
 
     if(inputs > 0 || outputs > 0)
     {
@@ -157,7 +157,7 @@ const std::vector<double> Brain::CreateVectorInput(const std::vector<Hexagon*>& 
     return input;
 }
 
-double Brain::Think(const std::vector<Hexagon*>& surroundingObjects3, std::vector<double>& values, int diff) const
+double Brain::Think(const std::vector<Hexagon*>& surroundingObjects3, std::vector<double>& values, int diff = 0) const
 {
     std::vector<double> input = CreateVectorInput(surroundingObjects3);
     input.push_back(stateOfLife);
@@ -238,45 +238,38 @@ Hexagon* Brain::GetSolution(const std::vector<Hexagon*>& surroundingObjects6) co
 
 void Brain::ResetWeights() const
 {
-    for (size_t i = 0; i < layers.size(); i++)
-    {
-        for (size_t indexOfOutputElements = 0; indexOfOutputElements < layers.at(i).size(); indexOfOutputElements++)
-        {
-            layers.at(i).at(indexOfOutputElements)->ResetSumOfWeights();
-        }
-    }
-}
-
-void Brain::SaveNetworkState(const std::string& path_to_file) const
-{
-    std::fstream fl(path_to_file, std::ios::app);
-    fl << "\t\t\t\t" << "\"brain\" : " << std::endl << "\t\t\t\t{" << std::endl;
-    fl << "\t\t\t\t\t" << "\"inputs\" : " << inputs << "," << std::endl;
-    fl << "\t\t\t\t\t" << "\"outputs\" : " << outputs << "," << std::endl;
-    fl << "\t\t\t\t\t" << "\"hidden\" : " << hidden << "," << std::endl;
-    fl << "\t\t\t\t\t" << "\"layers\" :" << std::endl;
-    fl << "\t\t\t\t\t[" << std::endl;
-    for (size_t indOfLayer = 0; indOfLayer < layers.size(); indOfLayer++)
-    {
-        fl << "\t\t\t\t\t\t[" << std::endl;
-        for (size_t indOfNeuron = 0; indOfNeuron < layers[indOfLayer].size(); indOfNeuron++)
-        {
-            layers[indOfLayer].at(indOfNeuron)->SaveNeuronState(path_to_file);
-            if (layers[indOfLayer].size() - 1 != indOfNeuron)
-                fl << "," << std::endl;
-        }
-        fl << std::endl;
-        fl << "\t\t\t\t\t\t]";
-        if (layers.size() - 1 != indOfLayer)
-            fl << "," << std::endl;
-    }
-    fl << std::endl << "\t\t\t\t\t" << "]" << std::endl;
-    fl << "\t\t\t\t}" << std::endl;
-    fl.close();
+	for (size_t i = 0; i < layers.size(); i++)
+	{
+		for (size_t indexOfOutputElements = 0; indexOfOutputElements < layers.at(i).size(); indexOfOutputElements++)
+		{
+			layers.at(i).at(indexOfOutputElements)->ResetSumOfWeights();
+		}
+	}
 }
 
 void Brain::UpdateStateOfLife(double newState)
 {
-
     stateOfLife = 1 - GetLayer(1).at(1)->Process(newState);
+}
+
+const Json Brain::getJson() const
+{
+    Json j;
+    j["Inputs"] = inputs;
+    j["Outputs"] = outputs;
+    j["Hidden"] = hidden;
+    Json jsonForlayers;
+    Json jj;
+    for (size_t indOfLayer = 0; indOfLayer < layers.size() - 1; indOfLayer++)
+    {
+        for (size_t indOfNeuron = 0; indOfNeuron < layers[indOfLayer].size(); indOfNeuron++)
+        {
+            Json neuronState = layers[indOfLayer].at(indOfNeuron)->getJson();
+            jj.push_back(neuronState);
+        }
+        jsonForlayers.push_back(jj);
+        jj.clear();
+    }
+    j["Layers"] = jsonForlayers;
+    return j;
 }

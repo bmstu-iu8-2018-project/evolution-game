@@ -1,5 +1,3 @@
-#include <random>
-
 #include "Brain.hpp"
 #include "TrainAlgorithm.hpp"
 
@@ -18,6 +16,7 @@ void TrainAlgorithm::CommonInitialization()
         for (size_t innerOfNeurons = 0; innerOfNeurons < brain->GetLayer(innerOfLayers).size(); innerOfNeurons++)
         {
             Neuron* currentNeuron = brain->GetLayer(innerOfLayers).at(innerOfNeurons);
+            currentNeuron->SetSumOfWeights(0);
             for (size_t innerOfLinks = 0; innerOfLinks < currentNeuron->GetNumOfLinks(); innerOfLinks++)
             {
                 Link* currentLink = currentNeuron->at(innerOfLinks);
@@ -44,7 +43,7 @@ void TrainAlgorithm::WeightsInitialization(const Json& object)
             for (size_t innerOfLinks = 0; innerOfLinks < currentNeuron->GetNumOfLinks(); innerOfLinks++)
             {
                 Link* currentLink = currentNeuron->at(innerOfLinks);
-                double weight = object["brain"]["layers"][innerOfLayers][innerOfNeurons][innerOfLinks];
+                double weight = object["Brain"]["Layers"][innerOfLayers][innerOfNeurons][innerOfLinks];
                 currentLink->SetWeight(weight);
             }
         }

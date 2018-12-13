@@ -1,9 +1,8 @@
-
-#ifndef EVOLUTION_BUTTON_H
-#define EVOLUTION_BUTTON_H
-
+#ifndef BUTTON_H
+#define BUTTON_H
 
 #include <cmath>
+
 #include <SFML/Graphics/CircleShape.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 
@@ -12,7 +11,7 @@ class Button
 public:
     Button() = default;
     ~Button() = default;
-    Button(const float&, const float&, const float&);
+    Button(const float, const float, const float);
 
     double GetX();
     double GetY();
@@ -35,4 +34,4 @@ private:
 };
 
 
-#endif //EVOLUTION_BUTTON_H
+#endif

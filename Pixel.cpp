@@ -4,25 +4,32 @@ Pixel::Pixel()
 {
     numberOfLifeIterations = 1;
     brain = Brain();
+    lifes = 99;
+    howMuchFoodAte = 0;
+    howMuchPoisonAte = 0;
 }
 
-Pixel::Pixel(const double xNew, const double yNew, const size_t CellStrNew, const size_t CellColNew)
+Pixel::Pixel(double xNew, double yNew, size_t CellStrNew, size_t CellColNew)
         :    Hexagon(Type::PIXEL, xNew, yNew, CellStrNew, CellColNew)
 {
     numberOfLifeIterations = 1;
     medicine = 0;
+    lifes = 99;
+    howMuchFoodAte = 0;
+    howMuchPoisonAte = 0;
 }
 
-Pixel::Pixel(const double xNew, const double yNew, const size_t CellStrNew, const size_t CellColNew, Brain newBrain)
+Pixel::Pixel(double xNew, double yNew, size_t CellStrNew, size_t CellColNew, const Brain& newBrain)
         :    Hexagon(Type::PIXEL, xNew, yNew, CellStrNew, CellColNew),
              brain(newBrain)
 {
     numberOfLifeIterations = 1;
     medicine = 0;
+    lifes = 99;
 }
 
-Pixel::Pixel(const float xNew, const float yNew, const size_t CellStrNew,
-             const size_t CellColNew, const double lifesNew, Brain brainNew, double medicineNew)
+Pixel::Pixel(double xNew, double yNew, const size_t CellStrNew,
+             size_t CellColNew, double lifesNew, const Brain& brainNew, double medicineNew)
         :    Hexagon(Type::PIXEL, xNew, yNew, CellStrNew, CellColNew),
              brain(brainNew),
              numberOfLifeIterations(1)
@@ -35,8 +42,8 @@ Pixel::Pixel(const float xNew, const float yNew, const size_t CellStrNew,
         isHealfy = false;
 }
 
-Pixel::Pixel(const float xNew, const float yNew, const size_t CellStrNew,
-             const size_t CellColNew, const double lifesNew, Brain brainNew)
+Pixel::Pixel(double xNew, double yNew, size_t CellStrNew,
+             size_t CellColNew, double lifesNew, const Brain& brainNew)
         :    Hexagon(Type::PIXEL, xNew, yNew, CellStrNew, CellColNew)
 {
     numberOfLifeIterations = 1;
@@ -131,13 +138,18 @@ void Pixel::Update(Map& map)
 
 void Pixel::EatingFood(Hexagon* hexagon1, Map& map)
 {
-    if (hexagon1->GetType() == Hexagon::Type::POISON) {
+    if (hexagon1->GetType() == Hexagon::Type::POISON)
+    {
         isHealfy = false;
-        lifes = 0;
-    } else {
-        lifes += hexagon1->GetLifes();
-        medicine = hexagon1->GetMedicine();
+        ++howMuchPoisonAte;
+        lifes = 1;
     }
+    else
+    {
+        ++howMuchFoodAte;
+        lifes += hexagon1->GetLifes();
+    }
+    medicine = hexagon1->GetMedicine();
     map[hexagon1->GetCellStr()].erase(hexagon1->GetCellCol());
     map[hexagon1->GetCellStr()].insert(new Water(hexagon1->GetX(), hexagon1->GetY(),
                                                  hexagon1->GetCellStr(), hexagon1->GetCellCol()), hexagon1->GetCellCol());
@@ -173,9 +185,9 @@ void Pixel::Reproduction(Map& map)
     dir = ViewNearbyCells(map, Type::WATER);
     if (dir != nullptr)
     {
-        map[dir->GetCellStr()].erase(dir->GetCellCol());
         Pixel* hex = new Pixel(dir->GetX(), dir->GetY(), dir->GetCellStr(), dir->GetCellCol(), lifes,
                                brain);
+        map[dir->GetCellStr()].erase(dir->GetCellCol());
         map[dir->GetCellStr()].insert(hex, dir->GetCellCol());
         map.SetOrganism(hex);
     }
@@ -238,24 +250,23 @@ void Pixel::SetBrain(const Brain& brainNew)
     brain = brainNew;
 }
 
+void Pixel::SetHealth(bool healthy)
+{
+    isHealfy = healthy;
+}
+
+int Pixel::GetHowMuchFoodAte() const
+{
+    return howMuchFoodAte;
+}
+int Pixel::GetHowMuchPoisonAte() const
+{
+    return howMuchPoisonAte;
+}
+
 void Pixel::ResetNumberOfLifeIterations()
 {
     numberOfLifeIterations = 0;
-}
-
-void Pixel::SaveToFile(const std::string& path_to_file) const
-{
-    std::fstream fl(path_to_file, std::ios::app);
-    fl << "\t\t\t\t" << "\"cellStr\"" << " : " << cellStr << "," << std::endl;
-    fl << "\t\t\t\t" << "\"cellCol\"" << " : " << cellCol << "," << std::endl;
-    fl << "\t\t\t\t" << "\"x\"" << " : " << x << "," << std::endl;
-    fl << "\t\t\t\t" << "\"y\"" << " : " << y << "," << std::endl;
-    fl << "\t\t\t\t" << "\"type\"" << " : " << type << "," << std::endl;
-    fl << "\t\t\t\t" << "\"lifes\"" << " : " << lifes << "," << std::endl;
-    fl << "\t\t\t\t" << "\"medicine\"" << " : " << medicine << "," << std::endl;
-    fl << "\t\t\t\t" << "\"isHealfy\"" << " : " << isHealfy << "," << std::endl;
-    fl.close();
-    brain.SaveNetworkState(path_to_file);
 }
 
 void Pixel::Print(sf::RenderWindow* window) const
@@ -275,4 +286,16 @@ void Pixel::Print(sf::RenderWindow* window) const
     text.setString(hexagonLifesString.str());
     text.setPosition((float)x + 2, (float)y + 2);
     window->draw(text);
+}
+
+const Json Pixel::getJson() const
+{
+    Json j;
+    j["Type"] = type;
+    j["Lifes"] = lifes;
+    j["Medicine"] = medicine;
+    j["IsHealfy"] = isHealfy;
+    j["NumberOfLifeIterations"] = numberOfLifeIterations;
+    j["Brain"] = brain.getJson();
+    return j;
 }

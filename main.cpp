@@ -7,7 +7,7 @@
 int main()
 {
     Evolution evolution;
-    evolution.run();
-    //evolution.Menu();
+    //evolution.run();
+    evolution.Menu();
     return 0;
 }

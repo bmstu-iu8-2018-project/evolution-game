@@ -1,7 +1,7 @@
 #ifndef NETWORKFUNCTION_H_
 #define NETWORKFUNCTION_H_
 
-#include <math.h>
+#include <cmath>
 
 class NetworkFunction
 {

@@ -4,7 +4,6 @@
 Evolution::Evolution()
 {
     map = Map(94, 60);
-    map.UploadFromFile(34690);
     window.create(sf::VideoMode(map.GetWidth(), map.GetHeight()), "Evolution");
     buttonDecrease= Button(0, 5, 0);
     buttonIncrease = Button(40, 70, 180);
@@ -45,6 +44,7 @@ void Evolution::Menu()
 {
     size_t width = 94;
     size_t height = 60;
+    int evNum = 1;
     while(window.isOpen())
     {
         window.clear();
@@ -61,45 +61,116 @@ void Evolution::Menu()
         Run.setColor(sf::Color::Green);
         Run.setString("Run with :");
         Run.setStyle(sf::Text::Underlined);
-        Run.setPosition(600, 400);
+        Run.setPosition(600, 500);
 
         sf::Text menu_newEvolution("", font, 25);
         menu_newEvolution.setColor(sf::Color::Red);
         menu_newEvolution.setString("New evolution");
         menu_newEvolution.setStyle(sf::Text::Underlined);
-        menu_newEvolution.setPosition(800, 400);
+        menu_newEvolution.setPosition(800, 500);
 
         sf::Text setScale("", font, 25);
         setScale.setColor(sf::Color::Red);
         setScale.setString("Set scale:");
         setScale.setStyle(sf::Text::Underlined);
-        setScale.setPosition(800, 600);
+        setScale.setPosition(600, 400);
+
         sf::Text setWidth("", font, 25);
         setWidth.setColor(sf::Color::Green);
-        setWidth.setString("Width: " + std::to_string(width));
-        setWidth.setPosition(950, 600);
+        setWidth.setString("Width: ");
+        setWidth.setPosition(800, 400);
+
+        sf::Text Width("", font, 25);
+        Width.setColor(sf::Color::Green);
+        Width.setString(std::to_string(width));
+        Width.setPosition(925, 400);
+
         sf::Text setHeight("", font, 25);
         setHeight.setColor(sf::Color::Green);
-        setHeight.setString("Height: " + std::to_string(height));
-        setHeight.setPosition(950, 650);
+        setHeight.setString("Height: ");
+        setHeight.setPosition(800, 450);
 
-        sf::Text menu_100_generation("", font, 25);
-        menu_100_generation.setColor(sf::Color::Red);
-        menu_100_generation.setString("100 generation");
-        menu_100_generation.setStyle(sf::Text::Underlined);
-        menu_100_generation.setPosition(800, 450);
+        sf::Text Height("", font, 25);
+        Height.setColor(sf::Color::Green);
+        Height.setString(std::to_string(height));
+        Height.setPosition(925, 450);
 
-        sf::Text menu_1000_generation("", font, 25);
-        menu_1000_generation.setColor(sf::Color::Red);
-        menu_1000_generation.setString("1000 generation");
-        menu_1000_generation.setStyle(sf::Text::Underlined);
-        menu_1000_generation.setPosition(800, 500);
+        sf::CircleShape increaseWidth(20, 4);
+        increaseWidth.setFillColor(sf::Color(169, 169, 169));
+        increaseWidth.setOutlineThickness(1);
+        increaseWidth.setOutlineColor(sf::Color::Red);
+        increaseWidth.setRotation(45);
+        increaseWidth.setPosition(900, 390);
+        sf::Text increase1("", font, 25);
+        increase1.setColor(sf::Color::Red);
+        increase1.setString("+");
+        increase1.setPosition(893, 400);
 
-        sf::Text menu_5000_generation("", font, 25);
-        menu_5000_generation.setColor(sf::Color::Red);
-        menu_5000_generation.setString("5000 generation");
-        menu_5000_generation.setStyle(sf::Text::Underlined);
-        menu_5000_generation.setPosition(800, 550);
+        sf::CircleShape decreaseWidth(20, 4);
+        decreaseWidth.setFillColor(sf::Color(169, 169, 169));
+        decreaseWidth.setOutlineThickness(1);
+        decreaseWidth.setOutlineColor(sf::Color::Red);
+        decreaseWidth.setRotation(45);
+        decreaseWidth.setPosition(980, 390);
+        sf::Text decrease1("", font, 25);
+        decrease1.setColor(sf::Color::Red);
+        decrease1.setString("-");
+        decrease1.setPosition(975, 400);
+
+        sf::CircleShape increaseHeight(20, 4);
+        increaseHeight.setFillColor(sf::Color(169, 169, 169));
+        increaseHeight.setOutlineThickness(1);
+        increaseHeight.setOutlineColor(sf::Color::Red);
+        increaseHeight.setRotation(45);
+        increaseHeight.setPosition(900, 440);
+        sf::Text increase2("", font, 25);
+        increase2.setColor(sf::Color::Red);
+        increase2.setString("+");
+        increase2.setPosition(893, 450);
+
+        sf::CircleShape decreaseHeight(20, 4);
+        decreaseHeight.setFillColor(sf::Color(169, 169, 169));
+        decreaseHeight.setOutlineThickness(1);
+        decreaseHeight.setOutlineColor(sf::Color::Red);
+        decreaseHeight.setRotation(45);
+        decreaseHeight.setPosition(980, 440);
+        sf::Text decrease2("", font, 25);
+        decrease2.setColor(sf::Color::Red);
+        decrease2.setString("-");
+        decrease2.setPosition(975, 450);
+
+        sf::CircleShape increaseEv(20, 4);
+        increaseEv.setFillColor(sf::Color(169, 169, 169));
+        increaseEv.setOutlineThickness(1);
+        increaseEv.setOutlineColor(sf::Color::Red);
+        increaseEv.setRotation(45);
+        increaseEv.setPosition(820, 540);
+        sf::Text increaseNumEv("", font, 25);
+        increaseNumEv.setColor(sf::Color::Red);
+        increaseNumEv.setString("+");
+        increaseNumEv.setPosition(813, 550);
+
+        sf::CircleShape decreaseEv(20, 4);
+        decreaseEv.setFillColor(sf::Color(169, 169, 169));
+        decreaseEv.setOutlineThickness(1);
+        decreaseEv.setOutlineColor(sf::Color::Red);
+        decreaseEv.setRotation(45);
+        decreaseEv.setPosition(900, 540);
+        sf::Text decreaseNumEv("", font, 25);
+        decreaseNumEv.setColor(sf::Color::Red);
+        decreaseNumEv.setString("-");
+        decreaseNumEv.setPosition(895, 550);
+
+        sf::Text runEv("", font, 25);
+        runEv.setColor(sf::Color::Red);
+        runEv.setString("Run");
+        runEv.setStyle(sf::Text::Underlined);
+        runEv.setPosition(950, 550);
+
+        sf::Text numberEV("", font, 25);
+        numberEV.setColor(sf::Color::Green);
+        numberEV.setString(std::to_string(evNum));
+        numberEV.setPosition(850, 550);
 
         sf::Event event;
         while (window.pollEvent(event))
@@ -111,59 +182,117 @@ void Evolution::Menu()
             else if (event.type == sf::Event::KeyReleased)
                 keyboard.release(event.key.code);
             else if (keyboard.isPressed(sf::Keyboard::W))
-                width -= 5;
+            {
+                if (width < 94)
+                {
+                    ++width;
+                }
+                increaseWidth.setFillColor(sf::Color::Green);
+            }
             else if (keyboard.isPressed(sf::Keyboard::H))
-                height -= 5;
+            {
+                if (height < 60)
+                {
+                    ++height;
+                }
+                increaseHeight.setFillColor(sf::Color::Green);
+            }
+            else if (keyboard.isPressed(sf::Keyboard::E))
+            {
+                if (width >= 10)
+                {
+                    --width;
+                }
+                decreaseWidth.setFillColor(sf::Color::Green);
+            }
+            else if (keyboard.isPressed(sf::Keyboard::J))
+            {
+                if (height >= 10)
+                {
+                    --height;
+                }
+                decreaseHeight.setFillColor(sf::Color::Green);
+            }
+            else if (keyboard.isPressed(sf::Keyboard::U))
+            {
+                ++evNum;
+                increaseEv.setFillColor(sf::Color::Green);
+            }
+            else if (keyboard.isPressed(sf::Keyboard::D))
+            {
+                if (height > 1)
+                {
+                    --evNum;
+                }
+                decreaseEv.setFillColor(sf::Color::Green);
+            }
+            if (!(keyboard.isPressed(sf::Keyboard::W)))
+            {
+                increaseWidth.setFillColor(sf::Color(169, 169, 169));
+            }
+            if (!(keyboard.isPressed(sf::Keyboard::E)))
+            {
+                decreaseWidth.setFillColor(sf::Color(169, 169, 169));
+            }
+            if (!(keyboard.isPressed(sf::Keyboard::H)))
+            {
+                increaseHeight.setFillColor(sf::Color(169, 169, 169));
+            }
+            if (!(keyboard.isPressed(sf::Keyboard::J)))
+            {
+                decreaseHeight.setFillColor(sf::Color(169, 169, 169));
+            }
             window.clear();
         }
 
         int menuNum = 0;
 
-        if (sf::IntRect(800, 400, 180, 50).contains(sf::Mouse::getPosition(window))) {
+        if (sf::IntRect(800, 500, 180, 50).contains(sf::Mouse::getPosition(window))) {
             menu_newEvolution.setColor(sf::Color::White);
             menuNum = 1;
-        } else if (sf::IntRect(800, 450, 180, 50).contains(sf::Mouse::getPosition(window))) {
-            menu_100_generation.setColor(sf::Color::White);
+        } else if (sf::IntRect(950, 550, 100, 50).contains(sf::Mouse::getPosition(window))) {
+            runEv.setColor(sf::Color::White);
             menuNum = 2;
-        } else if (sf::IntRect(800, 500, 180, 50).contains(sf::Mouse::getPosition(window))) {
-            menu_1000_generation.setColor(sf::Color::White);
-            menuNum = 3;
-        } else if (sf::IntRect(800, 550, 180, 50).contains(sf::Mouse::getPosition(window))) {
-            menu_5000_generation.setColor(sf::Color::White);
-            menuNum = 4;
-        }
+            }
 
-            if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+        if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
             if (menuNum == 1) {
                 menu_newEvolution.setStyle(sf::Text::Bold | sf::Text::Underlined);
                 map = Map(width, height);
                 run();
             } else if (menuNum == 2) {
-                menu_100_generation.setStyle(sf::Text::Bold | sf::Text::Underlined);
-                map.UploadFromFile(100);
-                run();
-            } else if (menuNum == 3) {
-                menu_1000_generation.setStyle(sf::Text::Bold | sf::Text::Underlined);
-                map.UploadFromFile(1000);
-                run();
-            } else if (menuNum == 4) {
-                menu_5000_generation.setStyle(sf::Text::Bold | sf::Text::Underlined);
-                map.UploadFromFile(5000);
+                runEv.setStyle(sf::Text::Bold | sf::Text::Underlined);
+                map.UploadFromFile(evNum, width, height);
                 run();
             }
         }
 
         window.draw(textEvolution);
         window.draw(menu_newEvolution);
-        window.draw(menu_100_generation);
-        window.draw(menu_1000_generation);
-        window.draw(menu_5000_generation);
         window.draw(Run);
         window.draw(setScale);
         window.draw(setHeight);
         window.draw(setWidth);
+        window.draw(Height);
+        window.draw(Width);
+        window.draw(increaseHeight);
+        window.draw(increase2);
+        window.draw(increaseWidth);
+        window.draw(increase1);
+        window.draw(decreaseHeight);
+        window.draw(decrease2);
+        window.draw(decreaseWidth);
+        window.draw(decrease1);
+        window.draw(increaseEv);
+        window.draw(increaseNumEv);
+        window.draw(decreaseEv);
+        window.draw(decreaseNumEv);
+        window.draw(runEv);
+        window.draw(numberEV);
 
         window.display();
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
 }
 
@@ -191,10 +320,10 @@ void Evolution::run()
                     map.SaveToFile();
                     //  window.close();
                 }
-                else if (keyboard.isPressed(sf::Keyboard::U))
+                /*else if (keyboard.isPressed(sf::Keyboard::U))
                 {
                     map.UploadFromFile(1570);
-                }
+                }*/
                 else if (keyboard.isPressed(sf::Keyboard::W))
                 {
                     map.IncreaseTimesToSleep(10);

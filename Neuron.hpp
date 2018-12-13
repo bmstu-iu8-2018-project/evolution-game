@@ -1,14 +1,14 @@
 #ifndef NEURON_HPP_
 #define NEURON_HPP_
 
-#include "Link.hpp"
-#include "NetworkFunction.hpp"
-#include <fstream>
-#include <iostream>
 #include <vector>
 
+#include </home/anastasia/CLionProjects/evolution/tools/json-develop/single_include/nlohmann/json.hpp>
 
-const double LearningRate = 0.01;
+#include "Link.hpp"
+#include "NetworkFunction.hpp"
+
+using Json = nlohmann::json;
 
 class Neuron
 {
@@ -37,7 +37,7 @@ public:
     void SetSumOfWeights(double);
     virtual void SetInputLink(Link*);
 
-    virtual void SaveNeuronState(const std::string&) const;
+    const Json getJson() const;
 private:
     NetworkFunction* function;
     std::vector<Link*> inputLinks;

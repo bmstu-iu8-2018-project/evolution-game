@@ -122,18 +122,14 @@ void Neuron::SetInputLink(Link* newLLink)
     inputLinks.push_back(newLLink);
 }
 
-void Neuron::SaveNeuronState(const std::string& path_to_file) const
+const Json Neuron::getJson() const
 {
-    std::fstream fl(path_to_file, std::ios::app);
-    fl << "\t\t\t\t\t\t\t[";
+    Json j;
     for (size_t iNumOfOutLinks = 0; iNumOfOutLinks < linksToNeurons.size(); iNumOfOutLinks++)
     {
-        fl << linksToNeurons.at(iNumOfOutLinks)->GetWeight() ;
-        if (iNumOfOutLinks != linksToNeurons.size() - 1)
-            fl << ", ";
+        j.push_back(linksToNeurons.at(iNumOfOutLinks)->GetWeight());
     }
-    fl << "]";
-    fl.close();
+    return j;
 }
 
 

@@ -1,16 +1,20 @@
-#ifndef EVOLUTION_MAP_H
-#define EVOLUTION_MAP_H
+#ifndef MAP_H
+#define MAP_H
 
-#include <iostream>
-#include <string>
-#include <vector>
+#include <iomanip>
 #include <memory>
+#include <string>
 #include <thread>
+#include <vector>
+
 #include <boost/filesystem.hpp>
 #include <SFML/Graphics.hpp>
-#include "Hexagon.hpp"
-#include "Food.hpp"
+#include </home/anastasia/CLionProjects/evolution/tools/json-develop/single_include/nlohmann/json.hpp>
 
+#include "Food.hpp"
+#include "Hexagon.hpp"
+
+using Json = nlohmann::json;
 
 class Pixel;
 
@@ -60,9 +64,8 @@ public:
 class Map
 {
 public:
-    // Map();
-    Map(const int& widthCells = 94, const int& heightCells = 60);
-    Map(const std::string&, const int&);
+    Map(size_t widthCells = 94, size_t heightCells = 60);
+    Map(const std::string&, int, size_t, size_t);
     Map(const Map&);
     Map(Map&&);
     ~Map() = default;
@@ -77,12 +80,16 @@ public:
     void SetPoison(int);
     void RecreateMap(const std::vector<Pixel*>&);
     void ClonePixels(Map&, const std::vector<Pixel*>&);
+    std::vector<Pixel*> Selection(const std::vector<Pixel*>&);
 
     unsigned int GetWidth() const;
     unsigned int GetHeight() const;
 
     size_t GetWidthInCells() const;
     size_t GetHeightInCells() const;
+
+    void SetWidthInCells(size_t);
+    void SetHeightInCells(size_t);
 
     std::vector<Pixel*> GetOrganisms() const;
     std::vector<Pixel*> GetStaticOrganisms() const;
@@ -93,16 +100,15 @@ public:
 
     int GetTimeToSleep() const;
 
-    Wall* GetWall() const;
-
     void IncreaseTimesToSleep(int);
     void DecreaseTimesToSleep(int);
 
-    void SetEvolutionNumber(unsigned int);
+    Wall* GetWall() const;
+
     void SetOrganism(Pixel*);
     void Swap(Hexagon*, Hexagon*);
     void SaveToFile() const;
-    void UploadFromFile(int);
+    void UploadFromFile(int, size_t, size_t);
     void Print(sf::RenderWindow*) const;
 
 private:
@@ -113,9 +119,9 @@ private:
     std::vector<Row> map;
     std::vector<Pixel*> organisms;
     std::vector<Pixel*> staticOrganisms;
+    Wall* wall;
     int evolutionNumber = 1;
     int timeToSleep = 10;
-    Wall* wall;
 };
 
 #endif

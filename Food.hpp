@@ -1,7 +1,8 @@
-#ifndef EVOLUTION_FOOD_HPP
-#define EVOLUTION_FOOD_HPP
+#ifndef FOOD_HPP
+#define FOOD_HPP
 
 #include "Hexagon.hpp"
+
 #include </home/anastasia/CLionProjects/evolution/tools/json-develop/single_include/nlohmann/json.hpp>
 
 using Json = nlohmann::json;
@@ -11,12 +12,11 @@ class Food
 {
 public:
     Food(const double xNew, const double yNew, const size_t CellStrNew, const size_t CellColNew, double Medicine = rand() % 5)
-            :    Hexagon(Type::FOOD, xNew, yNew, CellStrNew, CellColNew)
+        :    Hexagon(Type::FOOD, xNew, yNew, CellStrNew, CellColNew)
     {
         medicine = Medicine;
+        lifes = 40;
     }
-
-    ~Food() = default;
 
     void Print(sf::RenderWindow* window) const override
     {
@@ -38,8 +38,6 @@ public:
     {
         medicine = 0;
     }
-
-    ~Water() = default;
 
     void Print(sf::RenderWindow* window) const override
     {
@@ -84,6 +82,7 @@ public:
         medicine = 0;
         lifes = 0;
     }
+
 };
 
 #endif
