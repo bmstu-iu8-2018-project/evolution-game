@@ -1,7 +1,6 @@
 #include "Map.hpp"
 #include <nlohmann/json.hpp>
 #include "Pixel.hpp"
-#include <iomanip>
 
 using Json = nlohmann::json;
 
@@ -141,7 +140,7 @@ std::vector<Pixel*> Map::Selection(const std::vector<Pixel*>& org)
 
 void Map::RecreateMap(const std::vector<Pixel*>& vectorOfNewOrganisms)
 {
-    Map mapNew;
+    Map mapNew(widthInCells, heightInCells);
     std::vector<Pixel*> smartestOrganisms = Selection(vectorOfNewOrganisms);
     mapNew.evolutionNumber = evolutionNumber;
     ClonePixels(mapNew, smartestOrganisms);
@@ -183,12 +182,12 @@ void Map::ClonePixels(Map& mapNew, const std::vector<Pixel*>& vectorOfNewOrganis
     }
 }
 
-Map::Map(const std::string& path, int numberOfEvolution)
+Map::Map(const std::string& path, int numberOfEvolution, size_t newWidth, size_t newHeight)
 {
     boost::filesystem::path path_to_file = path + "/" + "Map " + std::to_string(numberOfEvolution);
     if (!boost::filesystem::exists(path_to_file))
         throw std::runtime_error("Error in uploading files");
-    *this = Map();
+    *this = Map(newWidth, newHeight);
     std::ifstream file(path_to_file.string());
     std::string str;
     str.clear();
@@ -198,38 +197,44 @@ Map::Map(const std::string& path, int numberOfEvolution)
     file.close();
     Json object = Json::parse(str);
     evolutionNumber = object["Evolution"];
-    size_t cellStr;
-    size_t cellCol;
-    double x;
-    double y;
+    size_t cellStr1 = 0;
+    size_t cellCol1 = 0;
+    double x1 = 0;
+    double y1 = 0;
+    size_t cellStr2 = 0;
+    size_t cellCol2 = 0;
+    double x2 = 0;
+    double y2 = 0;
     double medicine;
     double lifes;
     for (auto& s : object["Static Organisms"])
     {
-        cellStr = static_cast<size_t>(s["CellStr"]);
-        cellCol = static_cast<size_t>(s["CellCol"]);
-        x = static_cast<double>(s["X"]);
-        y = static_cast<double>(s["Y"]);
+        cellStr1 = rand() % (heightInCells - 1);
+        cellCol1 = rand() % (widthInCells - 1);
+        x1 = map[cellStr1][cellCol1]->GetX();
+        y1 = map[cellStr1][cellCol1]->GetY();
         medicine = static_cast<double>(s["Medicine"]);
         lifes = static_cast<double>(s["Lifes"]);
-        staticOrganisms.push_back(new Pixel(x, y, cellStr, cellCol, lifes, Brain(s), medicine));
+        staticOrganisms.push_back(new Pixel(x1, y1, cellStr1, cellCol1, lifes, Brain(s), medicine));
         SetOrganism(staticOrganisms.back());
     }
     for (auto& s : object["Organisms"])
     {
-        cellStr = static_cast<size_t>(s["CellStr"]);
-        cellCol = static_cast<size_t>(s["CellCol"]);
-        x = static_cast<double>(s["X"]);
-        y = static_cast<double>(s["Y"]);
+        cellStr2 = rand() % (heightInCells - 1);
+        cellCol2 = rand() % (widthInCells - 1);
+        if (map[cellStr2][cellCol2]->GetType() == Hexagon::Type::PIXEL)
+        {
+            cellStr2 = rand() % (heightInCells - 1);
+            cellCol2 = rand() % (widthInCells - 1);
+        }
+        x2  = map[cellStr2][cellCol2]->GetX();
+        y2  = map[cellStr2][cellCol2]->GetY();
         medicine = static_cast<double>(s["Medicine"]);
         lifes = static_cast<double>(s["Lifes"]);
-        organisms.push_back(new Pixel(x, y, cellStr, cellCol, lifes, Brain(s), medicine));
+        organisms.push_back(new Pixel(x2, y2, cellStr2, cellCol2, lifes, Brain(s), medicine));
         SetOrganism(organisms.back());
     }
-    widthInCells = object["Width in Cells"];
-    heightInCells = object["Height in Cells"];
 }
-
 Map& Map::operator=(const Map& mapOld)
 {
     if (&mapOld != this)
@@ -399,15 +404,13 @@ void Map::Swap(Hexagon* hex1, Hexagon* hex2)
 void Map::SaveToFile() const
 {
     boost::filesystem::path path = boost::filesystem::current_path().parent_path();
-    path += "/recordsNew";
+    path += "/records";
     if(!boost::filesystem::exists(path))
         boost::filesystem::create_directory(path);
     std::string path_to_file = path.string() + "/Map " + std::to_string(evolutionNumber);
     std::fstream file(path_to_file, std::ios::app);
     Json j;
     j["Evolution"] = evolutionNumber;
-    j["Width in Cells"] = widthInCells;
-    j["Height in Cells"] = heightInCells;
     Json jj;
     jj.clear();
     for (auto& s : staticOrganisms)
@@ -421,13 +424,13 @@ void Map::SaveToFile() const
 }
 
 
-void Map::UploadFromFile(int numberOfEvolution)
+void Map::UploadFromFile(int numberOfEvolution, size_t newWidth, size_t newHeight)
 {
     boost::filesystem::path path = boost::filesystem::current_path().parent_path();
     path += "/recordsNew";
     if(!boost::filesystem::exists(path))
         throw std::runtime_error("UploadFromFile : can't file directory to load from");
-    *this = Map(path.string(), numberOfEvolution);
+    *this = Map(path.string(), numberOfEvolution, newWidth, newHeight);
 }
 
 void Map::Print(sf::RenderWindow* window) const

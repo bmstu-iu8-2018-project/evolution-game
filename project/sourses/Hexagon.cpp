@@ -106,6 +106,7 @@ void Hexagon::SetMedicine(double newMedicine)
 void Hexagon::ResetMedicine()
 {
     medicine = 0;
+    isHealfy = true;
 }
 
 bool Hexagon::IsAlive()
