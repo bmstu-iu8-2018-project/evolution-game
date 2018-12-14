@@ -65,7 +65,7 @@ class Map
 {
 public:
     Map(size_t widthCells = 94, size_t heightCells = 60);
-    Map(const std::string&, int);
+    Map(const std::string&, int, size_t, size_t);
     Map(const Map&);
     Map(Map&&);
     ~Map() = default;
@@ -105,14 +105,13 @@ public:
     void SetOrganism(Pixel*);
     void Swap(Hexagon*, Hexagon*);
     void SaveToFile() const;
-    void UploadFromFile(int);
+    void UploadFromFile(int, size_t, size_t);
     void Print(sf::RenderWindow*) const;
-
 private:
     static const unsigned int width = 2000;
     static const unsigned int height = 1000;
-    size_t widthInCells = 94;
-    size_t heightInCells = 60;
+    size_t widthInCells;
+    size_t heightInCells;
     std::vector<Row> map;
     std::vector<Pixel*> organisms;
     std::vector<Pixel*> staticOrganisms;
