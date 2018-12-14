@@ -157,7 +157,7 @@ const std::vector<double> Brain::CreateVectorInput(const std::vector<Hexagon*>& 
     return input;
 }
 
-double Brain::Think(const std::vector<Hexagon*>& surroundingObjects3, std::vector<double>& values, int diff = 0) const
+double Brain::Think(const std::vector<Hexagon*>& surroundingObjects3) const
 {
     std::vector<double> input = CreateVectorInput(surroundingObjects3);
     input.push_back(stateOfLife);
@@ -203,7 +203,7 @@ Hexagon* Brain::GetSolution(const std::vector<Hexagon*>& surroundingObjects6) co
 {
     std::vector<Hexagon*> sObjectsCopy = surroundingObjects6;
     std::srand(std::time(NULL));
-    std::vector<double> values(7, 0);
+    std::vector<double> values;
     int diff = 0;
 
     for (size_t i = 0; i < surroundingObjects6.size(); ++i)
@@ -215,7 +215,7 @@ Hexagon* Brain::GetSolution(const std::vector<Hexagon*>& surroundingObjects6) co
 
         //  Think(vec, values);
 
-        Think(vec, values, diff);
+        values.push_back(Think(vec));
         ++diff;
     }
 
