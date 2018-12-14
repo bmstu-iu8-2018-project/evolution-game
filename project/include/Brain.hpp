@@ -43,7 +43,7 @@ public:
 
     const std::vector<double> CreateVectorInput(const std::vector<Hexagon*>&) const;
 
-    double Think(const std::vector<Hexagon*>&, std::vector<double>&, int) const;
+    double Think(const std::vector<Hexagon*>&) const;
 
     Hexagon* GetSolution(const std::vector<Hexagon*>&) const;
 
