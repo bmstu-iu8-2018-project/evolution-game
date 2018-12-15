@@ -31,7 +31,7 @@ void Evolution::Statistics()
     }
     statisticsOfLifeIt /= map.GetStaticOrganisms().size();
     boost::filesystem::path path = boost::filesystem::current_path().parent_path();
-    path += "/records";
+    path += "/recordsNew";
     if(!boost::filesystem::exists(path))
         boost::filesystem::create_directory(path);
     std::string path_to_file = path.string() + "/Statistics";

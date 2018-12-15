@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "../classes/Keyboard.hpp"
+#include "Keyboard.hpp"
 
 TEST(KeyboardTest, test_not_pressed)
 {
