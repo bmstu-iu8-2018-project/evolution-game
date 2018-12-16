@@ -155,17 +155,17 @@ void Evolution::Menu()
         decreaseEv.setOutlineThickness(1);
         decreaseEv.setOutlineColor(sf::Color::Red);
         decreaseEv.setRotation(45);
-        decreaseEv.setPosition(900, 540);
+        decreaseEv.setPosition(950, 540);
         sf::Text decreaseNumEv("", font, 25);
         decreaseNumEv.setColor(sf::Color::Red);
         decreaseNumEv.setString("-");
-        decreaseNumEv.setPosition(895, 550);
+        decreaseNumEv.setPosition(945, 550);
 
         sf::Text runEv("", font, 25);
         runEv.setColor(sf::Color::Red);
         runEv.setString("Run");
         runEv.setStyle(sf::Text::Underlined);
-        runEv.setPosition(950, 550);
+        runEv.setPosition(980, 550);
 
         sf::Text numberEV("", font, 25);
         numberEV.setColor(sf::Color::Green);
@@ -215,15 +215,18 @@ void Evolution::Menu()
             }
             else if (keyboard.isPressed(sf::Keyboard::U))
             {
-                ++evNum;
+                if (evNum == 1)
+                    evNum += 9;
+                else
+                    evNum += 10;
                 increaseEv.setFillColor(sf::Color::Green);
             }
             else if (keyboard.isPressed(sf::Keyboard::D))
             {
-                if (height > 1)
-                {
-                    --evNum;
-                }
+                if (evNum > 10)
+                    evNum -= 10;
+                else if (evNum == 10)
+                    evNum -= 9;
                 decreaseEv.setFillColor(sf::Color::Green);
             }
             if (!(keyboard.isPressed(sf::Keyboard::W)))
@@ -302,8 +305,6 @@ void Evolution::run()
     map.MultiplyPixels(10);
     while (window.isOpen())
     {
-        if (map.GetEvolutionNumber() == 1 || map.GetEvolutionNumber() % 10 == 0)
-            map.SaveToFile();
         while (map.GetNumberOfAliveOrganisms() > 0 && window.isOpen())
         {
             sf::Event event;
@@ -318,12 +319,7 @@ void Evolution::run()
                 else if (keyboard.isPressed(sf::Keyboard::S))
                 {
                     map.SaveToFile();
-                    //  window.close();
                 }
-                /*else if (keyboard.isPressed(sf::Keyboard::U))
-                {
-                    map.UploadFromFile(1570);
-                }*/
                 else if (keyboard.isPressed(sf::Keyboard::W))
                 {
                     map.IncreaseTimesToSleep(10);
